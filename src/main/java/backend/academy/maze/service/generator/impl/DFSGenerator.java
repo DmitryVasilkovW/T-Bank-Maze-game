@@ -21,18 +21,34 @@ public class DFSGenerator implements Generator {
 
     private void generateMaze(Maze maze, int row, int col) {
         Cell current = maze.getCell(row, col);
-        current.type(Cell.Type.PASSAGE);
+        current.setType(Cell.Type.PASSAGE);
+
+        current.setSurface(getRandomSurface());
 
         List<Coordinate> directions = getShuffledDirections();
         for (Coordinate dir : directions) {
             int newRow = row + dir.row() * 2;
             int newCol = col + dir.col() * 2;
             if (isValid(newRow, newCol, maze)) {
-                maze.getCell(row + dir.row(), col + dir.col()).type(Cell.Type.PASSAGE);
+                maze.getCell(row + dir.row(), col + dir.col()).setType(Cell.Type.PASSAGE);
                 generateMaze(maze, newRow, newCol);
             }
         }
     }
+
+    private Cell.Surface getRandomSurface() {
+        int randomValue = random.nextInt(10);
+        if (randomValue < 2) {
+            return Cell.Surface.MUD;
+        } else if (randomValue < 4) {
+            return Cell.Surface.SAND;
+        } else if (randomValue == 9) {
+            return Cell.Surface.COIN;
+        } else {
+            return Cell.Surface.NORMAL;
+        }
+    }
+
 
     private List<Coordinate> getShuffledDirections() {
         List<Coordinate> directions = List.of(

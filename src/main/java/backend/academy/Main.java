@@ -7,6 +7,7 @@ import backend.academy.maze.service.generator.impl.DFSGenerator;
 import backend.academy.maze.service.io.Renderer;
 import backend.academy.maze.service.io.impl.SimpleRenderer;
 import backend.academy.maze.service.solver.Solver;
+import backend.academy.maze.service.solver.impl.AStarSolver;
 import backend.academy.maze.service.solver.impl.BFSSolver;
 import lombok.experimental.UtilityClass;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         Generator generator = new DFSGenerator();
-        Solver solver = new BFSSolver();
+        Solver solver = new AStarSolver();
         Renderer renderer = new SimpleRenderer();
 
         Maze maze = generator.generate(15, 15);
