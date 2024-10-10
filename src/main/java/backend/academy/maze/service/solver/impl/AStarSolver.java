@@ -4,23 +4,20 @@ import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
 import backend.academy.maze.service.solver.Solver;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
+
+import java.util.*;
 
 public class AStarSolver implements Solver {
+
     @Override
     public List<Coordinate> solve(Maze maze, Coordinate start, Coordinate end) {
-        PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingInt(Node::getTotalCost));
-        Map<Coordinate, Integer> costMap = new HashMap<>();
+        PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingDouble(Node::getTotalCost));
+        Map<Coordinate, Double> costMap = new HashMap<>();
         Map<Coordinate, Coordinate> cameFrom = new HashMap<>();
+        Set<Coordinate> visited = new HashSet<>();
 
         openSet.add(new Node(start, 0, heuristic(start, end)));
-        costMap.put(start, 0);
+        costMap.put(start, 0.0);
 
         while (!openSet.isEmpty()) {
             Node current = openSet.poll();
@@ -30,13 +27,22 @@ public class AStarSolver implements Solver {
                 return reconstructPath(cameFrom, end);
             }
 
-            for (Coordinate neighbor : getNeighbors(currentCoord, maze)) {
-                Cell neighborCell = maze.getCell(neighbor.row(), neighbor.col());
-                int newCost = costMap.get(currentCoord) + getMoveCost(neighborCell);
+            if (visited.contains(currentCoord)) {
+                continue;
+            }
+            visited.add(currentCoord);
 
-                if (newCost < costMap.getOrDefault(neighbor, Integer.MAX_VALUE)) {
+            for (Coordinate neighbor : getNeighbors(currentCoord, maze)) {
+                if (visited.contains(neighbor)) {
+                    continue;
+                }
+
+                Cell neighborCell = maze.getCell(neighbor.row(), neighbor.col());
+                double newCost = costMap.get(currentCoord) + getMoveCost(neighborCell);
+
+                if (newCost < costMap.getOrDefault(neighbor, Double.MAX_VALUE)) {
                     costMap.put(neighbor, newCost);
-                    int priority = newCost + heuristic(neighbor, end);
+                    double priority = newCost + heuristic(neighbor, end);
                     openSet.add(new Node(neighbor, newCost, priority));
                     cameFrom.put(neighbor, currentCoord);
                 }
@@ -46,16 +52,20 @@ public class AStarSolver implements Solver {
         return Collections.emptyList();
     }
 
-    private int getMoveCost(Cell cell) {
+    private double getMoveCost(Cell cell) {
         switch (cell.getSurface()) {
-            case MUD: return 5;
-            case SAND: return 3;
-            case COIN: return 1;
-            default: return 2;
+            case MUD:
+                return 5;
+            case SAND:
+                return 3;
+            case COIN:
+                return -2;
+            default:
+                return 1;
         }
     }
 
-    private int heuristic(Coordinate a, Coordinate b) {
+    private double heuristic(Coordinate a, Coordinate b) {
         return Math.abs(a.row() - b.row()) + Math.abs(a.col() - b.col());
     }
 
@@ -63,10 +73,10 @@ public class AStarSolver implements Solver {
         List<Coordinate> neighbors = new ArrayList<>();
 
         int[][] directions = {
-                {0, 1},
-                {0, -1},
-                {1, 0},
-                {-1, 0}
+                {0, 1},   // ->
+                {0, -1},  // <-
+                {1, 0},   // \|/
+                {-1, 0}   // ^
         };
 
         for (int[] dir : directions) {
@@ -99,10 +109,10 @@ public class AStarSolver implements Solver {
 
     private static class Node {
         private final Coordinate coordinate;
-        private final int cost;
-        private final int totalCost;
+        private final double cost;
+        private final double totalCost;
 
-        public Node(Coordinate coordinate, int cost, int totalCost) {
+        public Node(Coordinate coordinate, double cost, double totalCost) {
             this.coordinate = coordinate;
             this.cost = cost;
             this.totalCost = totalCost;
@@ -112,9 +122,8 @@ public class AStarSolver implements Solver {
             return coordinate;
         }
 
-        public int getTotalCost() {
+        public double getTotalCost() {
             return totalCost;
         }
     }
 }
-
