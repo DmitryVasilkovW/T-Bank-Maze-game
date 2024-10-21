@@ -8,7 +8,6 @@ import backend.academy.maze.service.io.Renderer;
 import backend.academy.maze.service.io.impl.SimpleRenderer;
 import backend.academy.maze.service.solver.Solver;
 import backend.academy.maze.service.solver.impl.AStarSolver;
-import backend.academy.maze.service.solver.impl.BFSSolver;
 import lombok.experimental.UtilityClass;
 import java.util.List;
 
