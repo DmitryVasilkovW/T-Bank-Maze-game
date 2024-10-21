@@ -10,8 +10,8 @@ public class SimpleRenderer implements Renderer {
     @Override
     public String render(Maze maze) {
         StringBuilder sb = new StringBuilder();
-        for (int row = 0; row < maze.getHeight(); row++) {
-            for (int col = 0; col < maze.getWidth(); col++) {
+        for (int row = 0; row < maze.height(); row++) {
+            for (int col = 0; col < maze.width(); col++) {
                 Cell cell = maze.getCell(row, col);
                 sb.append(getSymbolForCell(cell));
             }
@@ -24,16 +24,16 @@ public class SimpleRenderer implements Renderer {
     public String render(Maze maze, List<Coordinate> path) {
         StringBuilder sb = new StringBuilder(render(maze));
         for (Coordinate coord : path) {
-            int index = coord.row() * (maze.getWidth() + 1) + coord.col();
+            int index = coord.row() * (maze.width() + 1) + coord.col();
             sb.setCharAt(index, '*');
         }
         return sb.toString();
     }
 
     private char getSymbolForCell(Cell cell) {
-        return switch (cell.getType()) {
+        return switch (cell.type()) {
             case WALL -> '#';
-            case PASSAGE -> switch (cell.getSurface()) {
+            case PASSAGE -> switch (cell.surface()) {
                 case MUD -> 'M';
                 case START -> 'A';
                 case END -> 'B';

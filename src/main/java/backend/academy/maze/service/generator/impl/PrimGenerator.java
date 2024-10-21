@@ -1,8 +1,9 @@
 package backend.academy.maze.service.generator.impl;
 
-import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
+import backend.academy.maze.model.SurfaceType;
+import backend.academy.maze.model.PassageType;
 import backend.academy.maze.service.generator.Generator;
 
 import java.util.ArrayList;
@@ -17,20 +18,20 @@ public class PrimGenerator implements Generator {
         Maze maze = new Maze(height, width);
         initializeMaze(maze);
 
-        maze.getCell(start.row(), start.col()).setType(Cell.Type.PASSAGE);
+        maze.getCell(start.row(), start.col()).type(PassageType.PASSAGE);
         List<Edge> edges = new ArrayList<>();
         addEdges(maze, edges, start.row(), start.col());
 
         while (!edges.isEmpty()) {
             Edge edge = edges.remove(random.nextInt(edges.size()));
             if (isValidEdge(maze, edge)) {
-                maze.getCell(edge.row1, edge.col1).setType(Cell.Type.PASSAGE);
-                maze.getCell(edge.row2, edge.col2).setType(Cell.Type.PASSAGE);
+                maze.getCell(edge.row1, edge.col1).type(PassageType.PASSAGE);
+                maze.getCell(edge.row2, edge.col2).type(PassageType.PASSAGE);
 
                 removeWall(maze, edge);
 
-                maze.getCell(edge.row1, edge.col1).setSurface(getRandomSurface());
-                maze.getCell(edge.row2, edge.col2).setSurface(getRandomSurface());
+                maze.getCell(edge.row1, edge.col1).surface(getRandomSurface());
+                maze.getCell(edge.row2, edge.col2).surface(getRandomSurface());
 
                 addEdges(maze, edges, edge.row2, edge.col2);
             }
@@ -41,9 +42,9 @@ public class PrimGenerator implements Generator {
     }
 
     private void initializeMaze(Maze maze) {
-        for (int row = 0; row < maze.getHeight(); row++) {
-            for (int col = 0; col < maze.getWidth(); col++) {
-                maze.getCell(row, col).setType(Cell.Type.WALL);
+        for (int row = 0; row < maze.height(); row++) {
+            for (int col = 0; col < maze.width(); col++) {
+                maze.getCell(row, col).type(PassageType.WALL);
             }
         }
     }
@@ -57,44 +58,44 @@ public class PrimGenerator implements Generator {
         )) {
             int newRow = row + direction.row() * 2;
             int newCol = col + direction.col() * 2;
-            if (isInBounds(newRow, newCol, maze) && maze.getCell(newRow, newCol).type() == Cell.Type.WALL) {
+            if (isInBounds(newRow, newCol, maze) && maze.getCell(newRow, newCol).type() == PassageType.WALL) {
                 edges.add(new Edge(row, col, newRow, newCol));
             }
         }
     }
 
     private boolean isInBounds(int row, int col, Maze maze) {
-        return row >= 0 && col >= 0 && row < maze.getHeight() && col < maze.getWidth();
+        return row >= 0 && col >= 0 && row < maze.height() && col < maze.width();
     }
 
     private boolean isValidEdge(Maze maze, Edge edge) {
-        return maze.getCell(edge.row2, edge.col2).type() == Cell.Type.WALL;
+        return maze.getCell(edge.row2, edge.col2).type() == PassageType.WALL;
     }
 
     private void removeWall(Maze maze, Edge edge) {
         int wallRow = (edge.row1 + edge.row2) / 2;
         int wallCol = (edge.col1 + edge.col2) / 2;
-        maze.getCell(wallRow, wallCol).setType(Cell.Type.PASSAGE);
+        maze.getCell(wallRow, wallCol).type(PassageType.PASSAGE);
     }
 
     private void setStartAndEnd(Maze maze, Coordinate start, Coordinate end) {
-        maze.getCell(start.row(), start.col()).setType(Cell.Type.PASSAGE);
-        maze.getCell(start.row(), start.col()).setSurface(Cell.Surface.START);
+        maze.getCell(start.row(), start.col()).type(PassageType.PASSAGE);
+        maze.getCell(start.row(), start.col()).surface(SurfaceType.START);
 
-        maze.getCell(end.row(), end.col()).setType(Cell.Type.PASSAGE);
-        maze.getCell(end.row(), end.col()).setSurface(Cell.Surface.END);
+        maze.getCell(end.row(), end.col()).type(PassageType.PASSAGE);
+        maze.getCell(end.row(), end.col()).surface(SurfaceType.END);
     }
 
-    private Cell.Surface getRandomSurface() {
+    private SurfaceType getRandomSurface() {
         int randomValue = random.nextInt(10);
         if (randomValue < 2) {
-            return Cell.Surface.MUD;
+            return SurfaceType.MUD;
         } else if (randomValue < 4) {
-            return Cell.Surface.SAND;
+            return SurfaceType.SAND;
         } else if (randomValue == 9) {
-            return Cell.Surface.COIN;
+            return SurfaceType.COIN;
         } else {
-            return Cell.Surface.NORMAL;
+            return SurfaceType.NORMAL;
         }
     }
 

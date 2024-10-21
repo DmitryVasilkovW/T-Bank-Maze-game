@@ -1,5 +1,8 @@
 package backend.academy.maze.model;
 
+import lombok.Getter;
+
+@Getter
 public class Maze {
     private final int height;
     private final int width;
@@ -11,13 +14,10 @@ public class Maze {
         this.grid = new Cell[height][width];
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
-                grid[row][col] = new Cell(row, col, Cell.Type.WALL);
+                grid[row][col] = new Cell(row, col, PassageType.WALL);
             }
         }
     }
 
-    public int getHeight() { return height; }
-    public int getWidth() { return width; }
-    public Cell[][] getGrid() { return grid; }
     public Cell getCell(int row, int col) { return grid[row][col]; }
 }

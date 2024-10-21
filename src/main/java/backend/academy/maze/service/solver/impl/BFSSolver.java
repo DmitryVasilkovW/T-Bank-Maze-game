@@ -3,6 +3,7 @@ package backend.academy.maze.service.solver.impl;
 import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
+import backend.academy.maze.model.PassageType;
 import backend.academy.maze.service.solver.Solver;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +16,7 @@ import java.util.Queue;
 public class BFSSolver implements Solver {
     @Override
     public List<Coordinate> solve(Maze maze, Coordinate start, Coordinate end) {
-        Cell[][] grid = maze.getGrid();
+        Cell[][] grid = maze.grid();
         int height = grid.length;
         int width = grid[0].length;
         boolean[][] visited = new boolean[height][width];
@@ -36,7 +37,7 @@ public class BFSSolver implements Solver {
                 int newCol = current.col() + direction[1];
                 if (isInBounds(newRow, newCol, height, width) &&
                         !visited[newRow][newCol] &&
-                        grid[newRow][newCol].type() == Cell.Type.PASSAGE) {
+                        grid[newRow][newCol].type() == PassageType.PASSAGE) {
                     visited[newRow][newCol] = true;
                     Coordinate neighbor = new Coordinate(newRow, newCol);
                     queue.add(neighbor);

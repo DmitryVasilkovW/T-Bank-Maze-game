@@ -4,6 +4,7 @@ import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
 import backend.academy.maze.model.Node;
+import backend.academy.maze.model.PassageType;
 import backend.academy.maze.service.solver.Solver;
 
 import java.util.*;
@@ -59,7 +60,7 @@ public class AStarSolver implements Solver {
     }
 
     private double getMoveCost(Cell cell) {
-        return switch (cell.getSurface()) {
+        return switch (cell.surface()) {
             case MUD -> 5;
             case SAND -> 3;
             case COIN -> -2;
@@ -78,9 +79,9 @@ public class AStarSolver implements Solver {
             int newRow = coord.row() + dir[0];
             int newCol = coord.col() + dir[1];
 
-            if (newRow >= 0 && newRow < maze.getHeight() && newCol >= 0 && newCol < maze.getWidth()) {
+            if (newRow >= 0 && newRow < maze.height() && newCol >= 0 && newCol < maze.width()) {
                 Cell neighborCell = maze.getCell(newRow, newCol);
-                if (neighborCell.getType() == Cell.Type.PASSAGE) {
+                if (neighborCell.type() == PassageType.PASSAGE) {
                     neighbors.add(new Coordinate(newRow, newCol));
                 }
             }

@@ -3,6 +3,8 @@ package backend.academy.maze.service.generator.impl;
 import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
+import backend.academy.maze.model.SurfaceType;
+import backend.academy.maze.model.PassageType;
 import backend.academy.maze.service.generator.Generator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,43 +20,43 @@ public class DFSGenerator implements Generator {
         generateMaze(maze, start.row(), start.col());
 
         Cell startCell = maze.getCell(start.row(), start.col());
-        startCell.setType(Cell.Type.PASSAGE);
-        startCell.setSurface(Cell.Surface.START);
+        startCell.type(PassageType.PASSAGE);
+        startCell.surface(SurfaceType.START);
 
         Cell endCell = maze.getCell(end.row(), end.col());
-        endCell.setType(Cell.Type.PASSAGE);
-        endCell.setSurface(Cell.Surface.END);
+        endCell.type(PassageType.PASSAGE);
+        endCell.surface(SurfaceType.END);
 
         return maze;
     }
 
     private void generateMaze(Maze maze, int row, int col) {
         Cell current = maze.getCell(row, col);
-        current.setType(Cell.Type.PASSAGE);
+        current.type(PassageType.PASSAGE);
 
-        current.setSurface(getRandomSurface());
+        current.surface(getRandomSurface());
 
         List<Coordinate> directions = getShuffledDirections();
         for (Coordinate dir : directions) {
             int newRow = row + dir.row() * 2;
             int newCol = col + dir.col() * 2;
             if (isValid(newRow, newCol, maze)) {
-                maze.getCell(row + dir.row(), col + dir.col()).setType(Cell.Type.PASSAGE);
+                maze.getCell(row + dir.row(), col + dir.col()).type(PassageType.PASSAGE);
                 generateMaze(maze, newRow, newCol);
             }
         }
     }
 
-    private Cell.Surface getRandomSurface() {
+    private SurfaceType getRandomSurface() {
         int randomValue = random.nextInt(10);
         if (randomValue < 2) {
-            return Cell.Surface.MUD;
+            return SurfaceType.MUD;
         } else if (randomValue < 4) {
-            return Cell.Surface.SAND;
+            return SurfaceType.SAND;
         } else if (randomValue == 9) {
-            return Cell.Surface.COIN;
+            return SurfaceType.COIN;
         } else {
-            return Cell.Surface.NORMAL;
+            return SurfaceType.NORMAL;
         }
     }
 
@@ -71,7 +73,7 @@ public class DFSGenerator implements Generator {
     }
 
     private boolean isValid(int row, int col, Maze maze) {
-        return row >= 0 && col >= 0 && row < maze.getHeight() && col < maze.getWidth() &&
-                maze.getCell(row, col).type() == Cell.Type.WALL;
+        return row >= 0 && col >= 0 && row < maze.height() && col < maze.width() &&
+                maze.getCell(row, col).type() == PassageType.WALL;
     }
 }
