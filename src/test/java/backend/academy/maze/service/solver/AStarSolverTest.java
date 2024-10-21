@@ -20,7 +20,13 @@ public class AStarSolverTest {
 
     @BeforeEach
     void setUp() {
-        solver = new AStarSolver();
+        int[][] directions = {
+                {0, 1},   // ->
+                {0, -1},  // <-
+                {1, 0},   // \|/
+                {-1, 0},  // ^
+        };
+        solver = new AStarSolver(directions);
         maze = new Maze(5, 5);
 
         for (int row = 0; row < maze.getHeight(); row++) {
@@ -79,7 +85,6 @@ public class AStarSolverTest {
     @Test
     @DisplayName("Test move cost calculation using reflection")
     void testMoveCostCalculationUsingReflection() throws Exception {
-        AStarSolver solver = new AStarSolver();
         Cell cell = new Cell(0, 0, null);
 
         Method getMoveCostMethod = AStarSolver.class.getDeclaredMethod("getMoveCost", Cell.class);

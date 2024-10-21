@@ -3,25 +3,31 @@ package backend.academy.maze.service.solver.impl;
 import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
+import backend.academy.maze.model.Node;
 import backend.academy.maze.service.solver.Solver;
 
 import java.util.*;
 
 public class AStarSolver implements Solver {
+    private final int[][] directions;
+
+    public AStarSolver(int[][] directions) {
+        this.directions = directions;
+    }
 
     @Override
     public List<Coordinate> solve(Maze maze, Coordinate start, Coordinate end) {
-        PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingDouble(Node::getTotalCost));
+        PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingDouble(Node::totalCost));
         Map<Coordinate, Double> costMap = new HashMap<>();
         Map<Coordinate, Coordinate> cameFrom = new HashMap<>();
         Set<Coordinate> visited = new HashSet<>();
 
-        openSet.add(new Node(start, 0, heuristic(start, end)));
+        openSet.add(new Node(start,  heuristic(start, end)));
         costMap.put(start, 0.0);
 
         while (!openSet.isEmpty()) {
             Node current = openSet.poll();
-            Coordinate currentCoord = current.getCoordinate();
+            Coordinate currentCoord = current.coordinate();
 
             if (currentCoord.equals(end)) {
                 return reconstructPath(cameFrom, end);
@@ -43,7 +49,7 @@ public class AStarSolver implements Solver {
                 if (newCost < costMap.getOrDefault(neighbor, Double.MAX_VALUE)) {
                     costMap.put(neighbor, newCost);
                     double priority = newCost + heuristic(neighbor, end);
-                    openSet.add(new Node(neighbor, newCost, priority));
+                    openSet.add(new Node(neighbor, priority));
                     cameFrom.put(neighbor, currentCoord);
                 }
             }
@@ -53,16 +59,12 @@ public class AStarSolver implements Solver {
     }
 
     private double getMoveCost(Cell cell) {
-        switch (cell.getSurface()) {
-            case MUD:
-                return 5;
-            case SAND:
-                return 3;
-            case COIN:
-                return -2;
-            default:
-                return 1;
-        }
+        return switch (cell.getSurface()) {
+            case MUD -> 5;
+            case SAND -> 3;
+            case COIN -> -2;
+            default -> 1;
+        };
     }
 
     private double heuristic(Coordinate a, Coordinate b) {
@@ -71,13 +73,6 @@ public class AStarSolver implements Solver {
 
     private List<Coordinate> getNeighbors(Coordinate coord, Maze maze) {
         List<Coordinate> neighbors = new ArrayList<>();
-
-        int[][] directions = {
-                {0, 1},   // ->
-                {0, -1},  // <-
-                {1, 0},   // \|/
-                {-1, 0}   // ^
-        };
 
         for (int[] dir : directions) {
             int newRow = coord.row() + dir[0];
@@ -105,25 +100,5 @@ public class AStarSolver implements Solver {
 
         Collections.reverse(path);
         return path;
-    }
-
-    private static class Node {
-        private final Coordinate coordinate;
-        private final double cost;
-        private final double totalCost;
-
-        public Node(Coordinate coordinate, double cost, double totalCost) {
-            this.coordinate = coordinate;
-            this.cost = cost;
-            this.totalCost = totalCost;
-        }
-
-        public Coordinate getCoordinate() {
-            return coordinate;
-        }
-
-        public double getTotalCost() {
-            return totalCost;
-        }
     }
 }
