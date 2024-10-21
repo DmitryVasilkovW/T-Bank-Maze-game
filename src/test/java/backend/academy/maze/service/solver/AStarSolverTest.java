@@ -3,13 +3,17 @@ package backend.academy.maze.service.solver;
 import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
+import backend.academy.maze.model.TestCaseForSurface;
 import backend.academy.maze.service.solver.impl.AStarSolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,10 +25,10 @@ public class AStarSolverTest {
     @BeforeEach
     void setUp() {
         int[][] directions = {
-                {0, 1},   // ->
-                {0, -1},  // <-
-                {1, 0},   // \|/
-                {-1, 0},  // ^
+                {0, 1},
+                {0, -1},
+                {1, 0},
+                {-1, 0},
         };
         solver = new AStarSolver(directions);
         maze = new Maze(5, 5);
@@ -54,8 +58,8 @@ public class AStarSolverTest {
 
         assertNotNull(path, "The path should not be null");
         assertFalse(path.isEmpty(), "The path should not be empty");
-        assertEquals(start, path.get(0), "The path should start at the start position");
-        assertEquals(end, path.get(path.size() - 1), "The path should end at the end position");
+        assertEquals(start, path.getFirst(), "The path should start at the start position");
+        assertEquals(end, path.getLast(), "The path should end at the end position");
     }
 
     @Test
@@ -79,7 +83,67 @@ public class AStarSolverTest {
         List<Coordinate> path = solver.solve(maze, start, start);
 
         assertEquals(1, path.size(), "The path should contain only the start/end position if they are the same");
-        assertEquals(start, path.get(0), "The path should consist of the start position");
+        assertEquals(start, path.getFirst(), "The path should consist of the start position");
+    }
+
+    @ParameterizedTest
+    @MethodSource("pathProviderWithBadSurfaces")
+    @DisplayName("Test solving maze with different surfaces")
+    void testSolveWithDifferentBadSurfaces(TestCaseForSurface testCase) {
+        maze.getCell(1, 0).setType(Cell.Type.PASSAGE);
+        maze.getCell(1, 0).setType(Cell.Type.PASSAGE);
+        maze.getCell(2, 0).setType(Cell.Type.PASSAGE);
+        maze.getCell(2, 1).setType(Cell.Type.PASSAGE);
+        maze.getCell(testCase.dirtCoordinate().row(), testCase.dirtCoordinate().col()).setSurface(testCase.surface());
+
+        List<Coordinate> path = solver.solve(maze, testCase.start(), testCase.end());
+
+        assertFalse(path.contains(testCase.dirtCoordinate()), "The path must avoid the position with " + testCase.surface());
+        assertEquals(testCase.end(), path.getLast(), "The path must end at the final position");
+    }
+
+    static Stream<TestCaseForSurface> pathProviderWithBadSurfaces() {
+        return Stream.of(
+                new TestCaseForSurface(
+                        new Coordinate(0, 0),
+                        new Coordinate(4, 2),
+                        new Coordinate(1, 2),
+                        Cell.Surface.SAND
+                ),
+                new TestCaseForSurface(
+                        new Coordinate(0, 0),
+                        new Coordinate(4, 2),
+                        new Coordinate(1, 2),
+                        Cell.Surface.MUD
+                )
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("pathProviderWithGoodSurfaces")
+    @DisplayName("Test solving maze with different surfaces")
+    void testSolveWithDifferentGoodSurfaces(TestCaseForSurface testCase) {
+        maze.getCell(1, 0).setType(Cell.Type.PASSAGE);
+        maze.getCell(1, 0).setType(Cell.Type.PASSAGE);
+        maze.getCell(2, 0).setType(Cell.Type.PASSAGE);
+        maze.getCell(2, 1).setType(Cell.Type.PASSAGE);
+        maze.getCell(testCase.dirtCoordinate().row(), testCase.dirtCoordinate().col()).setSurface(testCase.surface());
+
+        List<Coordinate> path = solver.solve(maze, testCase.start(), testCase.end());
+
+        assertTrue(path.contains(testCase.dirtCoordinate()), "has to go over a good surface " + testCase.surface());
+        assertEquals(testCase.end(), path.getLast(), "The path must end at the final position");
+    }
+
+    static Stream<TestCaseForSurface> pathProviderWithGoodSurfaces() {
+        return Stream.of(
+                new TestCaseForSurface(
+                        new Coordinate(0, 0),
+                        new Coordinate(4, 2),
+                        new Coordinate(1, 2),
+                        Cell.Surface.COIN
+                )
+        );
     }
 
     @Test
@@ -131,5 +195,6 @@ public class AStarSolverTest {
         assertTrue(neighbors.contains(new Coordinate(0, 2)), "The top neighbor should be (0,2)");
         assertTrue(neighbors.contains(new Coordinate(2, 2)), "The bottom neighbor should be (2,2)");
     }
+
 }
 
