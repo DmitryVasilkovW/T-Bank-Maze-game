@@ -21,7 +21,9 @@ public class DFSGeneratorTest {
     void testMazeGenerationHasCorrectSize() {
         int height = 10;
         int width = 10;
-        Maze maze = generator.generate(height, width);
+        Coordinate start = new Coordinate(0, 0);
+        Coordinate end = new Coordinate(height - 1, width - 1);
+        Maze maze = generator.generate(height, width, start, end);
 
         assertEquals(height, maze.getHeight());
         assertEquals(width, maze.getWidth());
@@ -30,22 +32,45 @@ public class DFSGeneratorTest {
     @Test
     @DisplayName("maze entry point check")
     void testStartPositionIsPassage() {
-        Maze maze = generator.generate(10, 10);
+        int height = 10;
+        int width = 10;
+        Coordinate start = new Coordinate(0, 0);
+        Coordinate end = new Coordinate(height - 1, width - 1);
+        Maze maze = generator.generate(height, width, start, end);
 
-        Cell startCell = maze.getCell(0, 0);
+        Cell startCell = maze.getCell(start.row(), start.col());
+        assertEquals(Cell.Surface.START, startCell.getSurface(), "The starting cage should be marked as START.");
         assertEquals(Cell.Type.PASSAGE, startCell.getType(), "The starting cage should be a passageway.");
+    }
+
+    @Test
+    @DisplayName("maze exit point check")
+    void testEndPositionIsPassage() {
+        int height = 10;
+        int width = 10;
+        Coordinate start = new Coordinate(0, 0);
+        Coordinate end = new Coordinate(height - 1, width - 1);
+        Maze maze = generator.generate(height, width, start, end);
+
+        Cell endCell = maze.getCell(end.row(), end.col());
+        assertEquals(Cell.Surface.END, endCell.getSurface(), "The ending cage should be marked as END.");
+        assertEquals(Cell.Type.PASSAGE, endCell.getType(), "The ending cage should be a passageway.");
     }
 
     @Test
     @DisplayName("Checking the correctness of the maze parts")
     void testAllCellsAreEitherPassageOrWall() {
-        Maze maze = generator.generate(10, 10);
+        int height = 10;
+        int width = 10;
+        Coordinate start = new Coordinate(0, 0);
+        Coordinate end = new Coordinate(height - 1, width - 1);
+        Maze maze = generator.generate(height, width, start, end);
 
         for (int row = 0; row < maze.getHeight(); row++) {
             for (int col = 0; col < maze.getWidth(); col++) {
                 Cell.Type cellType = maze.getCell(row, col).getType();
                 assertTrue(cellType == Cell.Type.PASSAGE || cellType == Cell.Type.WALL,
-                        "All cages must be either aisles or walls.");
+                        "All cells must be either passages or walls.");
             }
         }
     }
@@ -53,7 +78,12 @@ public class DFSGeneratorTest {
     @Test
     @DisplayName("check that all surfaces in the maze have been generated")
     void testSurfaceDistribution() {
-        Maze maze = generator.generate(100, 100);
+        int height = 100;
+        int width = 100;
+        Coordinate start = new Coordinate(0, 0);
+        Coordinate end = new Coordinate(height - 1, width - 1);
+        Maze maze = generator.generate(height, width, start, end);
+
         int mudCount = 0;
         int sandCount = 0;
         int coinCount = 0;
@@ -83,30 +113,35 @@ public class DFSGeneratorTest {
 
         assertTrue(mudCount > 0, "There must be cells with a MUD surface.");
         assertTrue(sandCount > 0, "There must be cells with a SAND surface.");
-        assertTrue(coinCount > 0, "There should be cages of coins.");
-        assertTrue(normalCount > 0, "There should be cages with a regular surface.");
+        assertTrue(coinCount > 0, "There should be cells with coins.");
+        assertTrue(normalCount > 0, "There should be cells with a normal surface.");
     }
 
     @Test
     @DisplayName("Checking if the maze is passable")
     void testMazeHasCorrectPassageStructure() {
-        int height = 10;
-        int width = 10;
-        Maze maze = generator.generate(height, width);
+        int height = 15;
+        int width = 15;
+        Coordinate start = new Coordinate(0, 0);
+        Coordinate end = new Coordinate(height - 1, width - 1);
+        Maze maze = generator.generate(height, width, start, end);
 
         Set<Coordinate> visited = new HashSet<>();
-        dfsValidate(maze, new Coordinate(0, 0), visited);
+        dfsValidate(maze, start, visited);
+
+        assertTrue(visited.contains(end), "End point must be reachable from the start.");
 
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
                 Cell cell = maze.getCell(row, col);
                 if (cell.getType() == Cell.Type.PASSAGE) {
                     assertTrue(visited.contains(new Coordinate(row, col)),
-                            "Maze must have a passage structure.");
+                            "All passages must be reachable.");
                 }
             }
         }
     }
+
 
     private void dfsValidate(Maze maze, Coordinate coord, Set<Coordinate> visited) {
         if (coord.row() < 0 || coord.row() >= maze.getHeight() ||
@@ -127,4 +162,3 @@ public class DFSGeneratorTest {
         dfsValidate(maze, new Coordinate(coord.row(), coord.col() - 1), visited);
     }
 }
-
