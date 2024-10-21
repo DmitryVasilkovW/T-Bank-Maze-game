@@ -1,4 +1,4 @@
-package backend.academy.maze.service.solver.handler.impl;
+package backend.academy.maze.service.solver.handler.chain.impl;
 
 import backend.academy.maze.model.chain.Cost;
 import backend.academy.maze.model.chain.CostRequest;

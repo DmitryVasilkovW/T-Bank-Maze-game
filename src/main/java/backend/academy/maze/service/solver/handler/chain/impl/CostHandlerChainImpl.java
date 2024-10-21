@@ -1,8 +1,8 @@
-package backend.academy.maze.service.solver.handler.impl;
+package backend.academy.maze.service.solver.handler.chain.impl;
 
 import backend.academy.maze.model.chain.Cost;
 import backend.academy.maze.model.chain.CostRequest;
-import backend.academy.maze.service.solver.handler.CostHandlerChain;
+import backend.academy.maze.service.solver.handler.chain.CostHandlerChain;
 
 public abstract class CostHandlerChainImpl implements CostHandlerChain {
     protected CostHandlerChain next;

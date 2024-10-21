@@ -8,7 +8,7 @@ import backend.academy.maze.model.chain.Cost;
 import backend.academy.maze.model.chain.CostRequest;
 import backend.academy.maze.model.type.PassageType;
 import backend.academy.maze.service.solver.Solver;
-import backend.academy.maze.service.solver.handler.CostHandlerChain;
+import backend.academy.maze.service.solver.handler.chain.CostHandlerChain;
 
 import java.util.*;
 

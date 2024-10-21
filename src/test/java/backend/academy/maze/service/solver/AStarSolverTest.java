@@ -6,7 +6,7 @@ import backend.academy.maze.model.Maze;
 import backend.academy.maze.model.type.SurfaceType;
 import backend.academy.maze.model.TestCaseForSurface;
 import backend.academy.maze.model.type.PassageType;
-import backend.academy.maze.service.solver.handler.factory.impl.CostHandlerChainFactoryImpl;
+import backend.academy.maze.service.solver.handler.chain.factory.impl.CostHandlerChainFactoryImpl;
 import backend.academy.maze.service.solver.impl.AStarSolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
