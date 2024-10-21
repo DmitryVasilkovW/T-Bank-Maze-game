@@ -3,7 +3,9 @@ package backend.academy.maze.service.solver;
 import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
+import backend.academy.maze.model.SurfaceType;
 import backend.academy.maze.model.TestCaseForSurface;
+import backend.academy.maze.model.PassageType;
 import backend.academy.maze.service.solver.impl.AStarSolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,19 +35,19 @@ public class AStarSolverTest {
         solver = new AStarSolver(directions);
         maze = new Maze(5, 5);
 
-        for (int row = 0; row < maze.getHeight(); row++) {
-            for (int col = 0; col < maze.getWidth(); col++) {
-                maze.getCell(row, col).setType(Cell.Type.WALL);
+        for (int row = 0; row < maze.height(); row++) {
+            for (int col = 0; col < maze.width(); col++) {
+                maze.getCell(row, col).type(PassageType.WALL);
             }
         }
 
-        maze.getCell(0, 0).setType(Cell.Type.PASSAGE);
-        maze.getCell(0, 1).setType(Cell.Type.PASSAGE);
-        maze.getCell(0, 2).setType(Cell.Type.PASSAGE);
-        maze.getCell(1, 2).setType(Cell.Type.PASSAGE);
-        maze.getCell(2, 2).setType(Cell.Type.PASSAGE);
-        maze.getCell(3, 2).setType(Cell.Type.PASSAGE);
-        maze.getCell(4, 2).setType(Cell.Type.PASSAGE);
+        maze.getCell(0, 0).type(PassageType.PASSAGE);
+        maze.getCell(0, 1).type(PassageType.PASSAGE);
+        maze.getCell(0, 2).type(PassageType.PASSAGE);
+        maze.getCell(1, 2).type(PassageType.PASSAGE);
+        maze.getCell(2, 2).type(PassageType.PASSAGE);
+        maze.getCell(3, 2).type(PassageType.PASSAGE);
+        maze.getCell(4, 2).type(PassageType.PASSAGE);
     }
 
     @Test
@@ -65,7 +67,7 @@ public class AStarSolverTest {
     @Test
     @DisplayName("Test solving maze with no possible path")
     void testSolveNoPath() {
-        maze.getCell(3, 2).setType(Cell.Type.WALL);
+        maze.getCell(3, 2).type(PassageType.WALL);
 
         Coordinate start = new Coordinate(0, 0);
         Coordinate end = new Coordinate(4, 2);
@@ -90,11 +92,11 @@ public class AStarSolverTest {
     @MethodSource("pathProviderWithBadSurfaces")
     @DisplayName("Test solving maze with different surfaces")
     void testSolveWithDifferentBadSurfaces(TestCaseForSurface testCase) {
-        maze.getCell(1, 0).setType(Cell.Type.PASSAGE);
-        maze.getCell(1, 0).setType(Cell.Type.PASSAGE);
-        maze.getCell(2, 0).setType(Cell.Type.PASSAGE);
-        maze.getCell(2, 1).setType(Cell.Type.PASSAGE);
-        maze.getCell(testCase.dirtCoordinate().row(), testCase.dirtCoordinate().col()).setSurface(testCase.surface());
+        maze.getCell(1, 0).type(PassageType.PASSAGE);
+        maze.getCell(1, 0).type(PassageType.PASSAGE);
+        maze.getCell(2, 0).type(PassageType.PASSAGE);
+        maze.getCell(2, 1).type(PassageType.PASSAGE);
+        maze.getCell(testCase.dirtCoordinate().row(), testCase.dirtCoordinate().col()).surface(testCase.surface());
 
         List<Coordinate> path = solver.solve(maze, testCase.start(), testCase.end());
 
@@ -108,13 +110,13 @@ public class AStarSolverTest {
                         new Coordinate(0, 0),
                         new Coordinate(4, 2),
                         new Coordinate(1, 2),
-                        Cell.Surface.SAND
+                        SurfaceType.SAND
                 ),
                 new TestCaseForSurface(
                         new Coordinate(0, 0),
                         new Coordinate(4, 2),
                         new Coordinate(1, 2),
-                        Cell.Surface.MUD
+                        SurfaceType.MUD
                 )
         );
     }
@@ -123,11 +125,11 @@ public class AStarSolverTest {
     @MethodSource("pathProviderWithGoodSurfaces")
     @DisplayName("Test solving maze with different surfaces")
     void testSolveWithDifferentGoodSurfaces(TestCaseForSurface testCase) {
-        maze.getCell(1, 0).setType(Cell.Type.PASSAGE);
-        maze.getCell(1, 0).setType(Cell.Type.PASSAGE);
-        maze.getCell(2, 0).setType(Cell.Type.PASSAGE);
-        maze.getCell(2, 1).setType(Cell.Type.PASSAGE);
-        maze.getCell(testCase.dirtCoordinate().row(), testCase.dirtCoordinate().col()).setSurface(testCase.surface());
+        maze.getCell(1, 0).type(PassageType.PASSAGE);
+        maze.getCell(1, 0).type(PassageType.PASSAGE);
+        maze.getCell(2, 0).type(PassageType.PASSAGE);
+        maze.getCell(2, 1).type(PassageType.PASSAGE);
+        maze.getCell(testCase.dirtCoordinate().row(), testCase.dirtCoordinate().col()).surface(testCase.surface());
 
         List<Coordinate> path = solver.solve(maze, testCase.start(), testCase.end());
 
@@ -141,7 +143,7 @@ public class AStarSolverTest {
                         new Coordinate(0, 0),
                         new Coordinate(4, 2),
                         new Coordinate(1, 2),
-                        Cell.Surface.COIN
+                        SurfaceType.COIN
                 )
         );
     }
@@ -154,16 +156,16 @@ public class AStarSolverTest {
         Method getMoveCostMethod = AStarSolver.class.getDeclaredMethod("getMoveCost", Cell.class);
         getMoveCostMethod.setAccessible(true);
 
-        cell.setSurface(Cell.Surface.NORMAL);
+        cell.surface(SurfaceType.NORMAL);
         assertEquals(1.0, getMoveCostMethod.invoke(solver, cell));
 
-        cell.setSurface(Cell.Surface.MUD);
+        cell.surface(SurfaceType.MUD);
         assertEquals(5.0, getMoveCostMethod.invoke(solver, cell));
 
-        cell.setSurface(Cell.Surface.SAND);
+        cell.surface(SurfaceType.SAND);
         assertEquals(3.0, getMoveCostMethod.invoke(solver, cell));
 
-        cell.setSurface(Cell.Surface.COIN);
+        cell.surface(SurfaceType.COIN);
         assertEquals(-2.0, getMoveCostMethod.invoke(solver, cell));
     }
 

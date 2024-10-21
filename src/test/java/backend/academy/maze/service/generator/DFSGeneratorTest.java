@@ -3,6 +3,8 @@ package backend.academy.maze.service.generator;
 import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
+import backend.academy.maze.model.SurfaceType;
+import backend.academy.maze.model.PassageType;
 import backend.academy.maze.service.generator.impl.DFSGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,8 +27,8 @@ public class DFSGeneratorTest {
         Coordinate end = new Coordinate(height - 1, width - 1);
         Maze maze = generator.generate(height, width, start, end);
 
-        assertEquals(height, maze.getHeight());
-        assertEquals(width, maze.getWidth());
+        assertEquals(height, maze.height());
+        assertEquals(width, maze.width());
     }
 
     @Test
@@ -39,8 +41,8 @@ public class DFSGeneratorTest {
         Maze maze = generator.generate(height, width, start, end);
 
         Cell startCell = maze.getCell(start.row(), start.col());
-        assertEquals(Cell.Surface.START, startCell.getSurface(), "The starting cage should be marked as START.");
-        assertEquals(Cell.Type.PASSAGE, startCell.getType(), "The starting cage should be a passageway.");
+        assertEquals(SurfaceType.START, startCell.surface(), "The starting cage should be marked as START.");
+        assertEquals(PassageType.PASSAGE, startCell.type(), "The starting cage should be a passageway.");
     }
 
     @Test
@@ -53,8 +55,8 @@ public class DFSGeneratorTest {
         Maze maze = generator.generate(height, width, start, end);
 
         Cell endCell = maze.getCell(end.row(), end.col());
-        assertEquals(Cell.Surface.END, endCell.getSurface(), "The ending cage should be marked as END.");
-        assertEquals(Cell.Type.PASSAGE, endCell.getType(), "The ending cage should be a passageway.");
+        assertEquals(SurfaceType.END, endCell.surface(), "The ending cage should be marked as END.");
+        assertEquals(PassageType.PASSAGE, endCell.type(), "The ending cage should be a passageway.");
     }
 
     @Test
@@ -66,10 +68,10 @@ public class DFSGeneratorTest {
         Coordinate end = new Coordinate(height - 1, width - 1);
         Maze maze = generator.generate(height, width, start, end);
 
-        for (int row = 0; row < maze.getHeight(); row++) {
-            for (int col = 0; col < maze.getWidth(); col++) {
-                Cell.Type cellType = maze.getCell(row, col).getType();
-                assertTrue(cellType == Cell.Type.PASSAGE || cellType == Cell.Type.WALL,
+        for (int row = 0; row < maze.height(); row++) {
+            for (int col = 0; col < maze.width(); col++) {
+                PassageType cellType = maze.getCell(row, col).type();
+                assertTrue(cellType == PassageType.PASSAGE || cellType == PassageType.WALL,
                         "All cells must be either passages or walls.");
             }
         }
@@ -89,11 +91,11 @@ public class DFSGeneratorTest {
         int coinCount = 0;
         int normalCount = 0;
 
-        for (int row = 0; row < maze.getHeight(); row++) {
-            for (int col = 0; col < maze.getWidth(); col++) {
+        for (int row = 0; row < maze.height(); row++) {
+            for (int col = 0; col < maze.width(); col++) {
                 Cell cell = maze.getCell(row, col);
-                if (cell.getType() == Cell.Type.PASSAGE) {
-                    switch (cell.getSurface()) {
+                if (cell.type() == PassageType.PASSAGE) {
+                    switch (cell.surface()) {
                         case MUD:
                             mudCount++;
                             break;
@@ -134,7 +136,7 @@ public class DFSGeneratorTest {
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
                 Cell cell = maze.getCell(row, col);
-                if (cell.getType() == Cell.Type.PASSAGE) {
+                if (cell.type() == PassageType.PASSAGE) {
                     assertTrue(visited.contains(new Coordinate(row, col)),
                             "All passages must be reachable.");
                 }
@@ -144,13 +146,13 @@ public class DFSGeneratorTest {
 
 
     private void dfsValidate(Maze maze, Coordinate coord, Set<Coordinate> visited) {
-        if (coord.row() < 0 || coord.row() >= maze.getHeight() ||
-                coord.col() < 0 || coord.col() >= maze.getWidth()) {
+        if (coord.row() < 0 || coord.row() >= maze.height() ||
+                coord.col() < 0 || coord.col() >= maze.width()) {
             return;
         }
 
         Cell cell = maze.getCell(coord.row(), coord.col());
-        if (cell.getType() != Cell.Type.PASSAGE || visited.contains(coord)) {
+        if (cell.type() != PassageType.PASSAGE || visited.contains(coord)) {
             return;
         }
 
