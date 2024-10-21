@@ -35,6 +35,8 @@ public class SimpleRenderer implements Renderer {
             case WALL -> '#';
             case PASSAGE -> switch (cell.getSurface()) {
                 case MUD -> 'M';
+                case START -> 'A';
+                case END -> 'B';
                 case SAND -> 'S';
                 case COIN -> 'C';
                 default -> ' ';

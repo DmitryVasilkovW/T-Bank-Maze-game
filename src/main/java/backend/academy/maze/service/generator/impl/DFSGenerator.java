@@ -13,9 +13,18 @@ public class DFSGenerator implements Generator {
     private final Random random = new Random();
 
     @Override
-    public Maze generate(int height, int width) {
+    public Maze generate(int height, int width, Coordinate start, Coordinate end) {
         Maze maze = new Maze(height, width);
-        generateMaze(maze, 0, 0);
+        generateMaze(maze, start.row(), start.col());
+
+        Cell startCell = maze.getCell(start.row(), start.col());
+        startCell.setType(Cell.Type.PASSAGE);
+        startCell.setSurface(Cell.Surface.START);
+
+        Cell endCell = maze.getCell(end.row(), end.col());
+        endCell.setType(Cell.Type.PASSAGE);
+        endCell.setSurface(Cell.Surface.END);
+
         return maze;
     }
 
@@ -48,7 +57,6 @@ public class DFSGenerator implements Generator {
             return Cell.Surface.NORMAL;
         }
     }
-
 
     private List<Coordinate> getShuffledDirections() {
         List<Coordinate> directions = List.of(

@@ -18,11 +18,12 @@ public class Main {
         Solver solver = new AStarSolver();
         Renderer renderer = new SimpleRenderer();
 
-        Maze maze = generator.generate(15, 15);
+        Coordinate start = new Coordinate(0, 0);
+        Coordinate end = new Coordinate(9, 9);
+
+        Maze maze = generator.generate(10, 10, start, end);
         System.out.println(renderer.render(maze));
 
-        Coordinate start = new Coordinate(0, 0);
-        Coordinate end = new Coordinate(14, 14);
         List<Coordinate> path = solver.solve(maze, start, end);
 
         if (!path.isEmpty()) {

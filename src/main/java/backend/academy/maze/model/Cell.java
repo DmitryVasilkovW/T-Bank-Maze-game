@@ -19,7 +19,10 @@ public class Cell {
         NORMAL,  // Обычная поверхность
         MUD,     // Болото (ухудшает движение)
         SAND,    // Песок (замедляет движение)
-        COIN     // Монеты (бонусная поверхность)
+        COIN,
+        START,
+        END,// Монеты (бонусная поверхность)
+
     }
 
     public Cell(int row, int col, Type type) {
