@@ -3,9 +3,10 @@ package backend.academy.maze.service.solver;
 import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
-import backend.academy.maze.model.SurfaceType;
+import backend.academy.maze.model.type.SurfaceType;
 import backend.academy.maze.model.TestCaseForSurface;
-import backend.academy.maze.model.PassageType;
+import backend.academy.maze.model.type.PassageType;
+import backend.academy.maze.service.solver.handler.factory.impl.CostHandlerChainFactoryImpl;
 import backend.academy.maze.service.solver.impl.AStarSolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +33,8 @@ public class AStarSolverTest {
                 {1, 0},
                 {-1, 0},
         };
-        solver = new AStarSolver(directions);
+        var factory = new CostHandlerChainFactoryImpl();
+        solver = new AStarSolver(directions, factory.createCostHandlerChain());
         maze = new Maze(5, 5);
 
         for (int row = 0; row < maze.height(); row++) {
