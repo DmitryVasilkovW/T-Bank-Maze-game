@@ -25,28 +25,20 @@ public class SimpleRenderer implements Renderer {
         StringBuilder sb = new StringBuilder(render(maze));
         for (Coordinate coord : path) {
             int index = coord.row() * (maze.getWidth() + 1) + coord.col();
-            sb.setCharAt(index, '*'); // Путь отображаем символом '*'
+            sb.setCharAt(index, '*');
         }
         return sb.toString();
     }
 
     private char getSymbolForCell(Cell cell) {
-        switch (cell.getType()) {
-            case WALL:
-                return '#'; // Стена
-            case PASSAGE:
-                switch (cell.getSurface()) {
-                    case MUD:
-                        return 'M'; // Болото
-                    case SAND:
-                        return 'S'; // Песок
-                    case COIN:
-                        return 'C'; // Монета
-                    default:
-                        return ' '; // Обычный проход
-                }
-            default:
-                return ' '; // На случай, если тип клетки не определен
-        }
+        return switch (cell.getType()) {
+            case WALL -> '#';
+            case PASSAGE -> switch (cell.getSurface()) {
+                case MUD -> 'M';
+                case SAND -> 'S';
+                case COIN -> 'C';
+                default -> ' ';
+            };
+        };
     }
 }
