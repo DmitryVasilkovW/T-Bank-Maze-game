@@ -3,7 +3,7 @@ package backend.academy.maze.service.solver.impl;
 import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
-import backend.academy.maze.model.PassageType;
+import backend.academy.maze.model.type.PassageType;
 import backend.academy.maze.service.solver.Solver;
 import java.util.ArrayList;
 import java.util.Collections;

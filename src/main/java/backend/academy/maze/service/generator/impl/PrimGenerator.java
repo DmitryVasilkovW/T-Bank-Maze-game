@@ -2,8 +2,8 @@ package backend.academy.maze.service.generator.impl;
 
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
-import backend.academy.maze.model.SurfaceType;
-import backend.academy.maze.model.PassageType;
+import backend.academy.maze.model.type.SurfaceType;
+import backend.academy.maze.model.type.PassageType;
 import backend.academy.maze.service.generator.Generator;
 
 import java.util.ArrayList;

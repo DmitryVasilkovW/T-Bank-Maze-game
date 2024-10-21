@@ -1,5 +1,6 @@
 package backend.academy.maze.model;
 
+import backend.academy.maze.model.type.PassageType;
 import lombok.Getter;
 
 @Getter

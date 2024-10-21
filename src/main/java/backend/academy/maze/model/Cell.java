@@ -1,5 +1,7 @@
 package backend.academy.maze.model;
 
+import backend.academy.maze.model.type.PassageType;
+import backend.academy.maze.model.type.SurfaceType;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -4,16 +4,21 @@ import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
 import backend.academy.maze.model.Node;
-import backend.academy.maze.model.PassageType;
+import backend.academy.maze.model.chain.Cost;
+import backend.academy.maze.model.chain.CostRequest;
+import backend.academy.maze.model.type.PassageType;
 import backend.academy.maze.service.solver.Solver;
+import backend.academy.maze.service.solver.handler.CostHandlerChain;
 
 import java.util.*;
 
 public class AStarSolver implements Solver {
     private final int[][] directions;
+    private final CostHandlerChain costHandlerChain;
 
-    public AStarSolver(int[][] directions) {
+    public AStarSolver(int[][] directions, CostHandlerChain costHandlerChain) {
         this.directions = directions;
+        this.costHandlerChain = costHandlerChain;
     }
 
     @Override
@@ -60,12 +65,8 @@ public class AStarSolver implements Solver {
     }
 
     private double getMoveCost(Cell cell) {
-        return switch (cell.surface()) {
-            case MUD -> 5;
-            case SAND -> 3;
-            case COIN -> -2;
-            default -> 1;
-        };
+        Cost cost = costHandlerChain.handle(new CostRequest(cell.surface()));
+        return cost.cost();
     }
 
     private double heuristic(Coordinate a, Coordinate b) {

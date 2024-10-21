@@ -7,6 +7,7 @@ import backend.academy.maze.service.generator.impl.PrimGenerator;
 import backend.academy.maze.service.io.Renderer;
 import backend.academy.maze.service.io.impl.SimpleRenderer;
 import backend.academy.maze.service.solver.Solver;
+import backend.academy.maze.service.solver.handler.factory.impl.CostHandlerChainFactoryImpl;
 import backend.academy.maze.service.solver.impl.AStarSolver;
 import lombok.experimental.UtilityClass;
 import java.util.List;
@@ -23,7 +24,9 @@ public class Main {
                 //{1, 1}, {1, -1}, {-1, 1}, {-1, -1}
         };
 
-        Solver solver = new AStarSolver(directions);
+        var factory = new CostHandlerChainFactoryImpl();
+
+        Solver solver = new AStarSolver(directions, factory.createCostHandlerChain());
         Renderer renderer = new SimpleRenderer();
 
         Coordinate start = new Coordinate(0, 0);
