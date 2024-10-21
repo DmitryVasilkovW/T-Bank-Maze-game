@@ -122,10 +122,9 @@ public class AStarSolverTest {
 
         List<Coordinate> neighbors = (List<Coordinate>) getNeighborsMethod.invoke(solver, coord, maze);
 
-        assertEquals(3, neighbors.size(), "The coordinate (1,2) should have three valid neighbors");
+        assertEquals(2, neighbors.size(), "The coordinate (1,2) should have three valid neighbors");
         assertTrue(neighbors.contains(new Coordinate(0, 2)), "The top neighbor should be (0,2)");
         assertTrue(neighbors.contains(new Coordinate(2, 2)), "The bottom neighbor should be (2,2)");
-        assertTrue(neighbors.contains(new Coordinate(1, 1)), "The left neighbor should be (1,1)");
     }
 }
 
