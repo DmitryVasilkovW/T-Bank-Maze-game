@@ -3,20 +3,33 @@ package backend.academy.maze.service.generator;
 import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
-import backend.academy.maze.model.type.SurfaceType;
 import backend.academy.maze.model.type.PassageType;
+import backend.academy.maze.model.type.SurfaceType;
+import backend.academy.maze.service.generator.handler.chain.factory.impl.SurfaceHandlerChainFactoryImpl;
 import backend.academy.maze.service.generator.impl.DFSGenerator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DFSGeneratorTest {
+    private DFSGenerator generator;
 
-    private final DFSGenerator generator = new DFSGenerator();
+    @BeforeEach
+    void setUp() {
+        List<Coordinate> directionsForGen = List.of(
+                new Coordinate(0, 1),
+                new Coordinate(1, 0),
+                new Coordinate(0, -1),
+                new Coordinate(-1, 0)
+        );
+
+        generator = new DFSGenerator(new SurfaceHandlerChainFactoryImpl().create(), directionsForGen);
+    }
 
     @Test
     @DisplayName("Checking width and height")

@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class Maze {
+
     private final int height;
     private final int width;
     private final Cell[][] grid;
@@ -20,5 +21,7 @@ public class Maze {
         }
     }
 
-    public Cell getCell(int row, int col) { return grid[row][col]; }
+    public Cell getCell(int row, int col) {
+        return grid[row][col];
+    }
 }

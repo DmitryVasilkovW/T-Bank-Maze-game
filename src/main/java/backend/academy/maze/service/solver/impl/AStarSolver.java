@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 public class AStarSolver implements Solver {
-
     private final Maze maze;
     private final int[][] directions;
     private final CostHandlerChain costHandlerChain;

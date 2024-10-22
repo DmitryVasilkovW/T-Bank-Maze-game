@@ -4,6 +4,8 @@ import backend.academy.maze.model.chain.Surface;
 import backend.academy.maze.model.chain.SurfaceRequest;
 
 public interface SurfaceHandlerChain {
+
     SurfaceHandlerChain addNext(SurfaceHandlerChain link);
+
     Surface handle(SurfaceRequest request);
 }
