@@ -188,12 +188,12 @@ public class AStarSolverTest {
     @Test
     @DisplayName("Test neighbors retrieval using reflection")
     void testGetNeighborsUsingReflection() throws Exception {
-        Method getNeighborsMethod = AStarSolver.class.getDeclaredMethod("getNeighbors", Coordinate.class, Maze.class);
+        Method getNeighborsMethod = AStarSolver.class.getDeclaredMethod("getNeighbors", Coordinate.class);
         getNeighborsMethod.setAccessible(true);
 
         Coordinate coord = new Coordinate(1, 2);
 
-        List<Coordinate> neighbors = (List<Coordinate>) getNeighborsMethod.invoke(solver, coord, maze);
+        List<Coordinate> neighbors = (List<Coordinate>) getNeighborsMethod.invoke(solver, coord);
 
         assertEquals(2, neighbors.size(), "The coordinate (1,2) should have three valid neighbors");
         assertTrue(neighbors.contains(new Coordinate(0, 2)), "The top neighbor should be (0,2)");

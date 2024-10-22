@@ -9,8 +9,13 @@ import backend.academy.maze.model.chain.CostRequest;
 import backend.academy.maze.model.type.PassageType;
 import backend.academy.maze.service.solver.Solver;
 import backend.academy.maze.service.solver.handler.chain.CostHandlerChain;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.PriorityQueue;
 
 public class AStarSolver implements Solver {
 
@@ -22,6 +27,9 @@ public class AStarSolver implements Solver {
     private HashMap<Coordinate, Coordinate> cameFrom = new HashMap<>();
     private HashSet<Coordinate> visited = new HashSet<>();
     private static final double INITIAL_PRIORITY_FOR_NODE = 0.0;
+    private static final int X_AXIS_COORDINATE_INDEX = 0;
+    private static final int Y_AXIS_COORDINATE_INDEX = 1;
+    private static final PassageType TYPE_OF_PASSAGE = PassageType.PASSAGE;
 
     public AStarSolver(int[][] directions, CostHandlerChain costHandlerChain, Maze maze) {
         this.directions = directions;
@@ -61,8 +69,8 @@ public class AStarSolver implements Solver {
             if (visited.contains(currentCoord)) {
                 continue;
             }
-            visited.add(currentCoord);
 
+            visited.add(currentCoord);
             updateCostsForNeighbor(currentCoord, end);
         }
 
@@ -70,7 +78,7 @@ public class AStarSolver implements Solver {
     }
 
     private void updateCostsForNeighbor(Coordinate currentCoord, Coordinate end) {
-        for (Coordinate neighbor : getNeighbors(currentCoord, maze)) {
+        for (Coordinate neighbor : getNeighbors(currentCoord)) {
             if (visited.contains(neighbor)) {
                 continue;
             }
@@ -95,20 +103,20 @@ public class AStarSolver implements Solver {
         return cost.cost();
     }
 
-    private double heuristic(Coordinate a, Coordinate b) {
-        return Math.abs(a.row() - b.row()) + Math.abs(a.col() - b.col());
+    private double heuristic(Coordinate first, Coordinate second) {
+        return Math.abs(first.row() - second.row()) + Math.abs(first.col() - second.col());
     }
 
-    private List<Coordinate> getNeighbors(Coordinate coord, Maze maze) {
-        List<Coordinate> neighbors = new ArrayList<>();
+    private List<Coordinate> getNeighbors(Coordinate coord) {
+        var neighbors = new ArrayList<Coordinate>();
 
         for (int[] dir : directions) {
-            int newRow = coord.row() + dir[0];
-            int newCol = coord.col() + dir[1];
+            int newRow = coord.row() + dir[X_AXIS_COORDINATE_INDEX];
+            int newCol = coord.col() + dir[Y_AXIS_COORDINATE_INDEX];
 
-            if (newRow >= 0 && newRow < maze.height() && newCol >= 0 && newCol < maze.width()) {
-                Cell neighborCell = maze.getCell(newRow, newCol);
-                if (neighborCell.type() == PassageType.PASSAGE) {
+            if (isValidMove(newRow, newCol)) {
+                Cell neighbor = maze.getCell(newRow, newCol);
+                if (neighbor.type() == TYPE_OF_PASSAGE) {
                     neighbors.add(new Coordinate(newRow, newCol));
                 }
             }
@@ -117,14 +125,19 @@ public class AStarSolver implements Solver {
         return neighbors;
     }
 
-    private List<Coordinate> reconstructPath(Map<Coordinate, Coordinate> cameFrom, Coordinate current) {
-        List<Coordinate> path = new ArrayList<>();
+    private boolean isValidMove(int row, int col) {
+        return row >= 0 && row < maze.height() && col >= 0 && col < maze.width();
+    }
 
-        while (cameFrom.containsKey(current)) {
-            path.add(current);
-            current = cameFrom.get(current);
+    private List<Coordinate> reconstructPath(HashMap<Coordinate, Coordinate> cameFrom, Coordinate current) {
+        var path = new ArrayList<Coordinate>();
+        var tmpCurrent = new Coordinate(current.row(), current.col());
+
+        while (cameFrom.containsKey(tmpCurrent)) {
+            path.add(tmpCurrent);
+            tmpCurrent = cameFrom.get(tmpCurrent);
         }
-        path.add(current);
+        path.add(tmpCurrent);
 
         Collections.reverse(path);
         return path;
