@@ -25,17 +25,16 @@ public class Main {
         };
 
         var factory = new CostHandlerChainFactoryImpl();
-
-        Solver solver = new AStarSolver(directions, factory.createCostHandlerChain());
-        Renderer renderer = new SimpleRenderer();
-
         Coordinate start = new Coordinate(0, 0);
         Coordinate end = new Coordinate(14, 14);
-
         Maze maze = generator.generate(15, 15, start, end);
+
+        Solver solver = new AStarSolver(directions, factory.createCostHandlerChain(), maze);
+        Renderer renderer = new SimpleRenderer();
+
         System.out.println(renderer.render(maze));
 
-        List<Coordinate> path = solver.solve(maze, start, end);
+        List<Coordinate> path = solver.solve(start, end);
 
         if (!path.isEmpty()) {
             System.out.println("Path found:");

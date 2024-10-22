@@ -14,8 +14,14 @@ import java.util.Map;
 import java.util.Queue;
 
 public class BFSSolver implements Solver {
+    private final Maze maze;
+
+    public BFSSolver(Maze maze) {
+        this.maze = maze;
+    }
+
     @Override
-    public List<Coordinate> solve(Maze maze, Coordinate start, Coordinate end) {
+    public List<Coordinate> solve(Coordinate start, Coordinate end) {
         Cell[][] grid = maze.grid();
         int height = grid.length;
         int width = grid[0].length;

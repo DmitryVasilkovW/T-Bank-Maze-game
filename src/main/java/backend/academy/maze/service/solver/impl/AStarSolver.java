@@ -13,24 +13,43 @@ import backend.academy.maze.service.solver.handler.chain.CostHandlerChain;
 import java.util.*;
 
 public class AStarSolver implements Solver {
+
+    private final Maze maze;
     private final int[][] directions;
     private final CostHandlerChain costHandlerChain;
+    private PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingDouble(Node::totalCost));
+    private HashMap<Coordinate, Double> costMap = new HashMap<>();
+    private HashMap<Coordinate, Coordinate> cameFrom = new HashMap<>();
+    private HashSet<Coordinate> visited = new HashSet<>();
+    private static final double INITIAL_PRIORITY_FOR_NODE = 0.0;
 
-    public AStarSolver(int[][] directions, CostHandlerChain costHandlerChain) {
+    public AStarSolver(int[][] directions, CostHandlerChain costHandlerChain, Maze maze) {
         this.directions = directions;
         this.costHandlerChain = costHandlerChain;
+        this.maze = maze;
     }
 
     @Override
-    public List<Coordinate> solve(Maze maze, Coordinate start, Coordinate end) {
-        PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingDouble(Node::totalCost));
-        Map<Coordinate, Double> costMap = new HashMap<>();
-        Map<Coordinate, Coordinate> cameFrom = new HashMap<>();
-        Set<Coordinate> visited = new HashSet<>();
+    public List<Coordinate> solve(Coordinate start, Coordinate end) {
+        resetCollectionsForSolving();
+        initCollectionsForSolving(start, end);
 
-        openSet.add(new Node(start,  heuristic(start, end)));
-        costMap.put(start, 0.0);
+        return getPathToEnd(end);
+    }
 
+    private void resetCollectionsForSolving() {
+        openSet = new PriorityQueue<>(Comparator.comparingDouble(Node::totalCost));
+        costMap = new HashMap<>();
+        cameFrom = new HashMap<>();
+        visited = new HashSet<>();
+    }
+
+    private void initCollectionsForSolving(Coordinate start, Coordinate end) {
+        openSet.add(new Node(start, heuristic(start, end)));
+        costMap.put(start, INITIAL_PRIORITY_FOR_NODE);
+    }
+
+    private List<Coordinate> getPathToEnd(Coordinate end) {
         while (!openSet.isEmpty()) {
             Node current = openSet.poll();
             Coordinate currentCoord = current.coordinate();
@@ -44,24 +63,31 @@ public class AStarSolver implements Solver {
             }
             visited.add(currentCoord);
 
-            for (Coordinate neighbor : getNeighbors(currentCoord, maze)) {
-                if (visited.contains(neighbor)) {
-                    continue;
-                }
-
-                Cell neighborCell = maze.getCell(neighbor.row(), neighbor.col());
-                double newCost = costMap.get(currentCoord) + getMoveCost(neighborCell);
-
-                if (newCost < costMap.getOrDefault(neighbor, Double.MAX_VALUE)) {
-                    costMap.put(neighbor, newCost);
-                    double priority = newCost + heuristic(neighbor, end);
-                    openSet.add(new Node(neighbor, priority));
-                    cameFrom.put(neighbor, currentCoord);
-                }
-            }
+            updateCostsForNeighbor(currentCoord, end);
         }
 
         return Collections.emptyList();
+    }
+
+    private void updateCostsForNeighbor(Coordinate currentCoord, Coordinate end) {
+        for (Coordinate neighbor : getNeighbors(currentCoord, maze)) {
+            if (visited.contains(neighbor)) {
+                continue;
+            }
+
+            double newCost = getCostForNeighbor(currentCoord, neighbor);
+            if (newCost < costMap.getOrDefault(neighbor, Double.MAX_VALUE)) {
+                costMap.put(neighbor, newCost);
+                double priority = newCost + heuristic(neighbor, end);
+                openSet.add(new Node(neighbor, priority));
+                cameFrom.put(neighbor, currentCoord);
+            }
+        }
+    }
+
+    private double getCostForNeighbor(Coordinate currentCoord, Coordinate neighbor) {
+        Cell neighborCell = maze.getCell(neighbor.row(), neighbor.col());
+        return costMap.get(currentCoord) + getMoveCost(neighborCell);
     }
 
     private double getMoveCost(Cell cell) {

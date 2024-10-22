@@ -34,8 +34,8 @@ public class AStarSolverTest {
                 {-1, 0},
         };
         var factory = new CostHandlerChainFactoryImpl();
-        solver = new AStarSolver(directions, factory.createCostHandlerChain());
         maze = new Maze(5, 5);
+        solver = new AStarSolver(directions, factory.createCostHandlerChain(), maze);
 
         for (int row = 0; row < maze.height(); row++) {
             for (int col = 0; col < maze.width(); col++) {
@@ -58,7 +58,7 @@ public class AStarSolverTest {
         Coordinate start = new Coordinate(0, 0);
         Coordinate end = new Coordinate(4, 2);
 
-        List<Coordinate> path = solver.solve(maze, start, end);
+        List<Coordinate> path = solver.solve(start, end);
 
         assertNotNull(path, "The path should not be null");
         assertFalse(path.isEmpty(), "The path should not be empty");
@@ -74,7 +74,7 @@ public class AStarSolverTest {
         Coordinate start = new Coordinate(0, 0);
         Coordinate end = new Coordinate(4, 2);
 
-        List<Coordinate> path = solver.solve(maze, start, end);
+        List<Coordinate> path = solver.solve(start, end);
 
         assertTrue(path.isEmpty(), "If there is no valid path, the result should be an empty list");
     }
@@ -84,7 +84,7 @@ public class AStarSolverTest {
     void testSolveStartEqualsEnd() {
         Coordinate start = new Coordinate(0, 0);
 
-        List<Coordinate> path = solver.solve(maze, start, start);
+        List<Coordinate> path = solver.solve(start, start);
 
         assertEquals(1, path.size(), "The path should contain only the start/end position if they are the same");
         assertEquals(start, path.getFirst(), "The path should consist of the start position");
@@ -100,7 +100,7 @@ public class AStarSolverTest {
         maze.getCell(2, 1).type(PassageType.PASSAGE);
         maze.getCell(testCase.dirtCoordinate().row(), testCase.dirtCoordinate().col()).surface(testCase.surface());
 
-        List<Coordinate> path = solver.solve(maze, testCase.start(), testCase.end());
+        List<Coordinate> path = solver.solve(testCase.start(), testCase.end());
 
         assertFalse(path.contains(testCase.dirtCoordinate()), "The path must avoid the position with " + testCase.surface());
         assertEquals(testCase.end(), path.getLast(), "The path must end at the final position");
@@ -133,7 +133,7 @@ public class AStarSolverTest {
         maze.getCell(2, 1).type(PassageType.PASSAGE);
         maze.getCell(testCase.dirtCoordinate().row(), testCase.dirtCoordinate().col()).surface(testCase.surface());
 
-        List<Coordinate> path = solver.solve(maze, testCase.start(), testCase.end());
+        List<Coordinate> path = solver.solve(testCase.start(), testCase.end());
 
         assertTrue(path.contains(testCase.dirtCoordinate()), "has to go over a good surface " + testCase.surface());
         assertEquals(testCase.end(), path.getLast(), "The path must end at the final position");
