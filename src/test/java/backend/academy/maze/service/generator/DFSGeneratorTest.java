@@ -5,7 +5,7 @@ import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
 import backend.academy.maze.model.type.PassageType;
 import backend.academy.maze.model.type.SurfaceType;
-import backend.academy.maze.service.generator.handler.chain.factory.impl.SurfaceHandlerChainFactoryImpl;
+import backend.academy.maze.service.generator.handler.chain.factory.impl.SurfaceTypeHandlerChainFactoryImpl;
 import backend.academy.maze.service.generator.impl.DFSGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +28,7 @@ public class DFSGeneratorTest {
                 new Coordinate(-1, 0)
         );
 
-        generator = new DFSGenerator(new SurfaceHandlerChainFactoryImpl().create(), directionsForGen);
+        generator = new DFSGenerator(new SurfaceTypeHandlerChainFactoryImpl().create(), directionsForGen);
     }
 
     @Test

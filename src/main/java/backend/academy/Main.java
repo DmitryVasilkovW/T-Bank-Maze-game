@@ -3,10 +3,12 @@ package backend.academy;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
 import backend.academy.maze.service.generator.Generator;
-import backend.academy.maze.service.generator.handler.chain.factory.impl.SurfaceHandlerChainFactoryImpl;
+import backend.academy.maze.service.generator.handler.chain.factory.impl.SurfaceTypeHandlerChainFactoryImpl;
 import backend.academy.maze.service.generator.impl.DFSGenerator;
 import backend.academy.maze.service.io.Renderer;
 import backend.academy.maze.service.io.impl.RendererImpl;
+import backend.academy.maze.service.io.impl.handler.chain.passage.factory.impl.PassageHandlerChainFactoryImpl;
+import backend.academy.maze.service.io.impl.handler.chain.surface.factory.impl.SurfaceHandlerChainFactoryImpl;
 import backend.academy.maze.service.solver.Solver;
 import backend.academy.maze.service.solver.handler.chain.factory.impl.CostHandlerChainFactoryImpl;
 import backend.academy.maze.service.solver.impl.AStarSolver;
@@ -27,7 +29,7 @@ public class Main {
 //                new Coordinate(-1, -1)
         );
 
-        Generator generator = new DFSGenerator(new SurfaceHandlerChainFactoryImpl().create(), directionsForGen) ;
+        Generator generator = new DFSGenerator(new SurfaceTypeHandlerChainFactoryImpl().create(), directionsForGen) ;
         int[][] directions = {
                 {0, 1},   // ->
                 {0, -1},  // <-
@@ -42,7 +44,9 @@ public class Main {
         Maze maze = generator.generate(15, 15, start, end);
 
         Solver solver = new AStarSolver(directions, factory.create(), maze);
-        Renderer renderer = new RendererImpl();
+        var passageChain = new PassageHandlerChainFactoryImpl().create();
+        var surfaceChain = new SurfaceHandlerChainFactoryImpl().create();
+        Renderer renderer = new RendererImpl(passageChain, surfaceChain);
 
         System.out.println(renderer.render(maze));
 
