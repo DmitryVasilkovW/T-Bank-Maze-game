@@ -1,7 +1,7 @@
 package backend.academy.maze.service.solver.handler.chain.impl;
 
 import backend.academy.maze.model.chain.Cost;
-import backend.academy.maze.model.chain.CostRequest;
+import backend.academy.maze.model.chain.request.CostRequest;
 
 public class DefaultSurfaceCostHandlerImpl extends CostHandlerChainImpl {
     private static final double DEFAULT_SURFACE_COST = 1;

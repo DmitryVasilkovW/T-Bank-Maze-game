@@ -10,7 +10,7 @@ import backend.academy.maze.service.solver.handler.chain.impl.SandSurfaceCostHan
 
 public class CostHandlerChainFactoryImpl implements CostHandlerChainFactory {
 
-    public CostHandlerChain createCostHandlerChain() {
+    public CostHandlerChain create() {
         return new CommonSurfaceCostHandlerImpl()
                 .addNext(new CoinSurfaceCostHandlerImpl()
                         .addNext(new SandSurfaceCostHandlerImpl()

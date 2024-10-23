@@ -1,7 +1,7 @@
 package backend.academy.maze.service.solver.handler.chain.impl;
 
 import backend.academy.maze.model.chain.Cost;
-import backend.academy.maze.model.chain.CostRequest;
+import backend.academy.maze.model.chain.request.CostRequest;
 import backend.academy.maze.model.type.SurfaceType;
 
 public class CoinSurfaceCostHandlerImpl extends CostHandlerChainImpl {

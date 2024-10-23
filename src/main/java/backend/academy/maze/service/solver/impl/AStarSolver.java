@@ -5,7 +5,7 @@ import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
 import backend.academy.maze.model.Node;
 import backend.academy.maze.model.chain.Cost;
-import backend.academy.maze.model.chain.CostRequest;
+import backend.academy.maze.model.chain.request.CostRequest;
 import backend.academy.maze.model.type.PassageType;
 import backend.academy.maze.service.solver.Solver;
 import backend.academy.maze.service.solver.handler.chain.CostHandlerChain;

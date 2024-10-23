@@ -6,7 +6,8 @@ import backend.academy.maze.model.Maze;
 import backend.academy.maze.service.io.Renderer;
 import java.util.List;
 
-public class SimpleRenderer implements Renderer {
+public class RendererImpl implements Renderer {
+
     @Override
     public String render(Maze maze) {
         StringBuilder sb = new StringBuilder();

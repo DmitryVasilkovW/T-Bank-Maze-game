@@ -4,7 +4,7 @@ import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
 import backend.academy.maze.model.chain.Surface;
-import backend.academy.maze.model.chain.SurfaceRequest;
+import backend.academy.maze.model.chain.request.SurfaceRequest;
 import backend.academy.maze.model.type.PassageType;
 import backend.academy.maze.model.type.SurfaceType;
 import backend.academy.maze.service.generator.Generator;

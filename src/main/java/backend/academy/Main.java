@@ -6,7 +6,7 @@ import backend.academy.maze.service.generator.Generator;
 import backend.academy.maze.service.generator.handler.chain.factory.impl.SurfaceHandlerChainFactoryImpl;
 import backend.academy.maze.service.generator.impl.DFSGenerator;
 import backend.academy.maze.service.io.Renderer;
-import backend.academy.maze.service.io.impl.SimpleRenderer;
+import backend.academy.maze.service.io.impl.RendererImpl;
 import backend.academy.maze.service.solver.Solver;
 import backend.academy.maze.service.solver.handler.chain.factory.impl.CostHandlerChainFactoryImpl;
 import backend.academy.maze.service.solver.impl.AStarSolver;
@@ -41,8 +41,8 @@ public class Main {
         Coordinate end = new Coordinate(14, 14);
         Maze maze = generator.generate(15, 15, start, end);
 
-        Solver solver = new AStarSolver(directions, factory.createCostHandlerChain(), maze);
-        Renderer renderer = new SimpleRenderer();
+        Solver solver = new AStarSolver(directions, factory.create(), maze);
+        Renderer renderer = new RendererImpl();
 
         System.out.println(renderer.render(maze));
 

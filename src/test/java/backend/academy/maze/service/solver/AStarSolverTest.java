@@ -35,7 +35,7 @@ public class AStarSolverTest {
         };
         var factory = new CostHandlerChainFactoryImpl();
         maze = new Maze(5, 5);
-        solver = new AStarSolver(directions, factory.createCostHandlerChain(), maze);
+        solver = new AStarSolver(directions, factory.create(), maze);
 
         for (int row = 0; row < maze.height(); row++) {
             for (int col = 0; col < maze.width(); col++) {
