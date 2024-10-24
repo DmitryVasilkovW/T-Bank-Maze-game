@@ -4,7 +4,7 @@ import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
 import java.util.List;
 
-public interface Renderer {
+public interface Render {
 
     String render(Maze maze);
 
