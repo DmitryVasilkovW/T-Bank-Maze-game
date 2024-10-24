@@ -7,16 +7,16 @@ import backend.academy.maze.service.io.impl.RenderImpl;
 import backend.academy.maze.service.io.impl.ScannerReaderImpl;
 import backend.academy.maze.service.io.impl.handler.chain.passage.factory.impl.PassageHandlerChainFactoryImpl;
 import backend.academy.maze.service.io.impl.handler.chain.surface.factory.impl.SurfaceHandlerChainFactoryImpl;
-import backend.academy.maze.service.launcher.Launcher;
+import backend.academy.maze.service.launcher.MazeLauncher;
 import backend.academy.maze.service.launcher.direction.factory.impl.DirectionFactoryImpl;
-import backend.academy.maze.service.launcher.factory.LauncherFactory;
-import backend.academy.maze.service.launcher.impl.LauncherImpl;
+import backend.academy.maze.service.launcher.factory.MazeLauncherFactory;
+import backend.academy.maze.service.launcher.impl.MazeLauncherImpl;
 import backend.academy.maze.service.solver.handler.chain.factory.impl.CostHandlerChainFactoryImpl;
 
-public class LauncherFactoryImpl implements LauncherFactory {
+public class MazeLauncherFactoryImpl implements MazeLauncherFactory {
 
     @Override
-    public Launcher create() {
+    public MazeLauncher create() {
         var directionFactory = new DirectionFactoryImpl();
 
         var surfaceTypeChainFactory = new SurfaceTypeHandlerChainFactoryImpl();
@@ -37,6 +37,6 @@ public class LauncherFactoryImpl implements LauncherFactory {
                 mazeChainFactory.createSurfaceObjectForCellHandlerChain()
         );
 
-        return new LauncherImpl(directionFactory, mazeChainFactory, printer, reader, render);
+        return new MazeLauncherImpl(directionFactory, mazeChainFactory, printer, reader, render);
     }
 }

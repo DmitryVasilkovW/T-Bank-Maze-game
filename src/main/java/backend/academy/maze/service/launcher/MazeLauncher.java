@@ -1,5 +1,5 @@
 package backend.academy.maze.service.launcher;
 
-public interface Launcher {
+public interface MazeLauncher {
     void launch();
 }
