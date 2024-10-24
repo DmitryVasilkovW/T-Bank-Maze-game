@@ -19,13 +19,18 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public class MazeLauncherImpl implements MazeLauncher {
-
     private final DirectionFactory directionFactory;
     private final MazeChainFactory mazeChainFactory;
     private final Printer printer;
     private final Reader reader;
     private final Render render;
     private Generator generator;
+    private static final String WARNING_FOR_YES_OR_NO_REQUEST = "Please enter 'yes/y' or 'no/n' to proceed.";
+    private static final String MESSAGE_FOR_LIST_OF_DIRECTIONS = "Should we build a maze with narrow passageways?";
+    private static final String MESSAGE_FOR_MATRIX_OF_DIRECTIONS = "Can the hero fit into narrow passageways?";
+    private static final String MESSAGE_FOR_GETTING_GENERATOR = "Do we need to create more dead ends and long corridors?";
+    private static final String MESSAGE_FOR_GETTING_SOLVER = "Does the hero need to pay attention to surfaces?";
+
 
     public MazeLauncherImpl(
             DirectionFactory directionFactory,
@@ -40,24 +45,25 @@ public class MazeLauncherImpl implements MazeLauncher {
 
     @Override
     public void launch() {
-        printer.println("Should we build a maze with narrow passageways?");
-        Optional<List<Coordinate>> directionsForGeneratorO = tryToCreateByUserResponse(
+        List<Coordinate> directionsForGenerator = getCorrectParameter(
+                MESSAGE_FOR_LIST_OF_DIRECTIONS,
+                WARNING_FOR_YES_OR_NO_REQUEST,
                 () -> directionFactory.createDirectionAsList(true),
-                () -> directionFactory.createDirectionAsList(false)
-        );
+                () -> directionFactory.createDirectionAsList(false));
 
-        printer.println("Can the hero fit into narrow passageways?");
-        Optional<int[][]> directionsForSolverO = tryToCreateByUserResponse(
+        int[][] directionsForSolver = getCorrectParameter(
+                MESSAGE_FOR_MATRIX_OF_DIRECTIONS,
+                WARNING_FOR_YES_OR_NO_REQUEST,
                 () -> directionFactory.createDirectionAsMatrix(true),
                 () -> directionFactory.createDirectionAsMatrix(false)
         );
 
-        printer.println("Do we need to create more dead ends and long corridors?");
-        Optional<Generator> generatorO = tryToCreateByUserResponse(
-                () -> new DFSGenerator(mazeChainFactory.createSurfaceHandlerChain(), directionsForGeneratorO.get()),
+        generator = getCorrectParameter(
+                MESSAGE_FOR_GETTING_GENERATOR,
+                WARNING_FOR_YES_OR_NO_REQUEST,
+                () -> new DFSGenerator(mazeChainFactory.createSurfaceHandlerChain(), directionsForGenerator),
                 PrimGenerator::new
         );
-        generator = generatorO.get();
 
         printer.println("enter point for start. Format: row column (1 1)");
         Optional<Coordinate> startO = tryToGetPoint();
@@ -80,15 +86,16 @@ public class MazeLauncherImpl implements MazeLauncher {
             return;
         }
 
-        printer.println("Does the hero need to pay attention to surfaces?");
-        Optional<Solver> solverO = tryToCreateByUserResponse(
-                () -> new AStarSolver(directionsForSolverO.get(), mazeChainFactory.createCostHandlerChain(),
+        Solver solver = getCorrectParameter(
+                MESSAGE_FOR_GETTING_SOLVER,
+                WARNING_FOR_YES_OR_NO_REQUEST,
+                () -> new AStarSolver(directionsForSolver, mazeChainFactory.createCostHandlerChain(),
                         mazeO.get()),
                 () -> new BFSSolver(mazeO.get())
         );
 
         printer.println(render.render(mazeO.get()));
-        List<Coordinate> path = solverO.get().solve(startO.get(), endO.get());
+        List<Coordinate> path = solver.solve(startO.get(), endO.get());
 
         if (!path.isEmpty()) {
             System.out.println("Path found:");
@@ -99,13 +106,26 @@ public class MazeLauncherImpl implements MazeLauncher {
         }
     }
 
+    private <T> T getCorrectParameter(String message, String warning, Supplier<T> trueSupplier, Supplier<T> falseSupplier) {
+        printer.println(message);
+        Optional<T> parameterO = tryToCreateByUserResponse(trueSupplier, falseSupplier);
+        while (parameterO.isEmpty()) {
+            printer.println(warning);
+            parameterO = tryToCreateByUserResponse(falseSupplier, trueSupplier);
+        }
+
+        return parameterO.get();
+    }
+
     private <T> Optional<T> tryToCreateByUserResponse(Supplier<T> trueSupplier, Supplier<T> falseSupplier) {
         String line = reader.readLineAsString().toLowerCase();
         if (line.equals("y") || line.equals("yes")) {
             return Optional.ofNullable(trueSupplier.get());
-        } else {
+        } else if (line.equals("n") || line.equals("no")) {
             return Optional.ofNullable(falseSupplier.get());
         }
+
+        return Optional.empty();
     }
 
     private Optional<Maze> tryToCreateMaze(Coordinate start, Coordinate end) {
