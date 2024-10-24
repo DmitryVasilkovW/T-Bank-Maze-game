@@ -16,6 +16,7 @@ import backend.academy.maze.service.solver.impl.AStarSolver;
 import backend.academy.maze.service.solver.impl.BFSSolver;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class MazeLauncherImpl implements MazeLauncher {
 
@@ -39,31 +40,24 @@ public class MazeLauncherImpl implements MazeLauncher {
 
     @Override
     public void launch() {
-        printer.println("should we build a maze with narrow passageways?");
-        String line = reader.readLineAsString().toLowerCase();
-        List<Coordinate> directionsForGenerator;
-        if (line.equals("y") || line.equals("yes")) {
-            directionsForGenerator = directionFactory.createDirectionAsList(true);
-        } else {
-            directionsForGenerator = directionFactory.createDirectionAsList(false);
-        }
+        printer.println("Should we build a maze with narrow passageways?");
+        Optional<List<Coordinate>> directionsForGeneratorO = tryToCreateByUserResponse(
+                () -> directionFactory.createDirectionAsList(true),
+                () -> directionFactory.createDirectionAsList(false)
+        );
 
         printer.println("Can the hero fit into narrow passageways?");
-        line = reader.readLineAsString().toLowerCase();
-        int[][] directionsForSolver;
-        if (line.equals("y") || line.equals("yes")) {
-            directionsForSolver = directionFactory.createDirectionAsMatrix(true);
-        } else {
-            directionsForSolver = directionFactory.createDirectionAsMatrix(false);
-        }
+        Optional<int[][]> directionsForSolverO = tryToCreateByUserResponse(
+                () -> directionFactory.createDirectionAsMatrix(true),
+                () -> directionFactory.createDirectionAsMatrix(false)
+        );
 
         printer.println("Do we need to create more dead ends and long corridors?");
-        line = reader.readLineAsString().toLowerCase();
-        if (line.equals("y") || line.equals("yes")) {
-            generator = new DFSGenerator(mazeChainFactory.createSurfaceHandlerChain(), directionsForGenerator);
-        } else {
-            generator = new PrimGenerator();
-        }
+        Optional<Generator> generatorO = tryToCreateByUserResponse(
+                () -> new DFSGenerator(mazeChainFactory.createSurfaceHandlerChain(), directionsForGeneratorO.get()),
+                PrimGenerator::new
+        );
+        generator = generatorO.get();
 
         printer.println("enter point for start. Format: row column (1 1)");
         Optional<Coordinate> startO = tryToGetPoint();
@@ -86,17 +80,15 @@ public class MazeLauncherImpl implements MazeLauncher {
             return;
         }
 
-        Solver solver;
         printer.println("Does the hero need to pay attention to surfaces?");
-        line = reader.readLineAsString().toLowerCase();
-        if (line.equals("y") || line.equals("yes")) {
-            solver = new AStarSolver(directionsForSolver, mazeChainFactory.createCostHandlerChain(), mazeO.get());
-        } else {
-            solver = new BFSSolver(mazeO.get());
-        }
+        Optional<Solver> solverO = tryToCreateByUserResponse(
+                () -> new AStarSolver(directionsForSolverO.get(), mazeChainFactory.createCostHandlerChain(),
+                        mazeO.get()),
+                () -> new BFSSolver(mazeO.get())
+        );
 
         printer.println(render.render(mazeO.get()));
-        List<Coordinate> path = solver.solve(startO.get(), endO.get());
+        List<Coordinate> path = solverO.get().solve(startO.get(), endO.get());
 
         if (!path.isEmpty()) {
             System.out.println("Path found:");
@@ -107,12 +99,22 @@ public class MazeLauncherImpl implements MazeLauncher {
         }
     }
 
+    private <T> Optional<T> tryToCreateByUserResponse(Supplier<T> trueSupplier, Supplier<T> falseSupplier) {
+        String line = reader.readLineAsString().toLowerCase();
+        if (line.equals("y") || line.equals("yes")) {
+            return Optional.ofNullable(trueSupplier.get());
+        } else {
+            return Optional.ofNullable(falseSupplier.get());
+        }
+    }
+
     private Optional<Maze> tryToCreateMaze(Coordinate start, Coordinate end) {
         String line = reader.readLineAsString();
         int height = Integer.parseInt(line.split(" ")[0]);
         int width = Integer.parseInt(line.split(" ")[1]);
 
-        if ((height < 2 || width < 2) || !isValidCoordinate(start, height, width) || !isValidCoordinate(end, height, width)) {
+        if ((height < 2 || width < 2) || !isValidCoordinate(start, height, width) ||
+                !isValidCoordinate(end, height, width)) {
             return Optional.empty();
         }
 
