@@ -2,7 +2,6 @@ package backend.academy.maze.service.launcher.impl;
 
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
-import backend.academy.maze.service.chain.factory.MazeChainFactory;
 import backend.academy.maze.service.generator.Generator;
 import backend.academy.maze.service.generator.factory.GeneratorFactory;
 import backend.academy.maze.service.io.Printer;
@@ -12,6 +11,7 @@ import backend.academy.maze.service.io.UserInputValidator;
 import backend.academy.maze.service.launcher.MazeLauncher;
 import backend.academy.maze.service.launcher.direction.factory.DirectionFactory;
 import backend.academy.maze.service.solver.Solver;
+import backend.academy.maze.service.solver.handler.chain.factory.CostHandlerChainFactory;
 import backend.academy.maze.service.solver.impl.AStarSolver;
 import backend.academy.maze.service.solver.impl.BFSSolver;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 public class MazeLauncherImpl implements MazeLauncher {
 
     private final DirectionFactory directionFactory;
-    private final MazeChainFactory mazeChainFactory;
+    private final CostHandlerChainFactory costHandlerChainFactory;
     private final GeneratorFactory generatorFactory;
     private final Printer printer;
     private final Reader reader;
@@ -35,10 +35,12 @@ public class MazeLauncherImpl implements MazeLauncher {
     private static final String MESSAGE_FOR_GETTING_GENERATOR =
             "Do we need to create more dead ends and long corridors?";
     private static final String MESSAGE_FOR_GETTING_SOLVER = "Does the hero need to pay attention to surfaces?";
-    private static final String WARNING_FOR_GETTING_POINT = "Incorrect input. It must minimum 1 x 1";
+    private static final String WARNING_FOR_GETTING_POINT = "Incorrect input."
+            + " It must minimum of 1 x 1 and maximum of weight -2 x height - 2";
     private static final String MESSAGE_FOR_GETTING_POINT_OF_START = "Enter point for start. Format: row column (1 1)";
     private static final String MESSAGE_FOR_GETTING_POINT_OF_END = "Enter point for end. Format: row column (13 13)";
-    private static final String WARNING_FOR_GETTING_SIZE = "Incorrect input. It must be minimum 3 x 3.";
+    private static final String WARNING_FOR_GETTING_SIZE = "Incorrect input. It must be minimum of 3 x 3"
+            + " and height must be more than column + 2 and weight must be more than row + 2.";
     private static final String MESSAGE_FOR_GETTING_SIZE =
             "Enter height and weight for maze. Format: height weight (15 15)";
     private static final String MESSAGE_FOR_SUCCESSFULLY_SOLUTION = "Path found:";
@@ -47,13 +49,14 @@ public class MazeLauncherImpl implements MazeLauncher {
 
     public MazeLauncherImpl(
             DirectionFactory directionFactory,
-            MazeChainFactory mazeChainFactory, GeneratorFactory generatorFactory,
+            CostHandlerChainFactory costHandlerChainFactory,
+            GeneratorFactory generatorFactory,
             Printer printer,
             Reader reader,
             Render render,
             UserInputValidator userInputValidator) {
         this.directionFactory = directionFactory;
-        this.mazeChainFactory = mazeChainFactory;
+        this.costHandlerChainFactory = costHandlerChainFactory;
         this.generatorFactory = generatorFactory;
         this.printer = printer;
         this.reader = reader;
@@ -119,7 +122,7 @@ public class MazeLauncherImpl implements MazeLauncher {
     private Solver getSolver(int[][] directionsForSolver, Maze maze) {
         return getCorrectParameter(
                 MESSAGE_FOR_GETTING_SOLVER,
-                () -> new AStarSolver(directionsForSolver, mazeChainFactory.createCostHandlerChain(),
+                () -> new AStarSolver(directionsForSolver, costHandlerChainFactory.create(),
                         maze),
                 () -> new BFSSolver(directionsForSolver, maze)
         );
@@ -161,6 +164,10 @@ public class MazeLauncherImpl implements MazeLauncher {
 
     private Optional<Maze> tryToCreateMaze(Coordinate start, Coordinate end) {
         String line = reader.readLineAsString();
+        if (!userInputValidator.isLineValid(line)) {
+            return Optional.empty();
+        }
+
         int height = Integer.parseInt(line.split(" ")[0]);
         int width = Integer.parseInt(line.split(" ")[1]);
 
@@ -184,6 +191,10 @@ public class MazeLauncherImpl implements MazeLauncher {
 
     private Optional<Coordinate> tryToGetPoint() {
         String line = reader.readLineAsString();
+        if (!userInputValidator.isLineValid(line)) {
+            return Optional.empty();
+        }
+
         int row = Integer.parseInt(line.split(" ")[0]);
         int column = Integer.parseInt(line.split(" ")[1]);
 

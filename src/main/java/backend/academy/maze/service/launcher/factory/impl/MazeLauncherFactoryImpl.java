@@ -1,6 +1,5 @@
 package backend.academy.maze.service.launcher.factory.impl;
 
-import backend.academy.maze.service.chain.factory.impl.MazeChainFactoryImpl;
 import backend.academy.maze.service.generator.factory.impl.GeneratorFactoryImpl;
 import backend.academy.maze.service.generator.handler.chain.factory.impl.SurfaceTypeHandlerChainFactoryImpl;
 import backend.academy.maze.service.io.factory.impl.RenderFactoryImpl;
@@ -26,12 +25,6 @@ public class MazeLauncherFactoryImpl implements MazeLauncherFactory {
         var surfaceForObjectChainFactory = new SurfaceHandlerChainFactoryImpl();
         var costChainFactory = new CostHandlerChainFactoryImpl();
 
-        var mazeChainFactory = new MazeChainFactoryImpl(
-                surfaceTypeChainFactory,
-                surfaceForObjectChainFactory,
-                passageForObjectChainFactory,
-                costChainFactory);
-
         var printer = new PrintStreamPrinterImpl(System.out);
         var reader = new ScannerReaderImpl(System.in);
         var render = new RenderFactoryImpl(passageForObjectChainFactory, surfaceForObjectChainFactory).create();
@@ -40,7 +33,7 @@ public class MazeLauncherFactoryImpl implements MazeLauncherFactory {
 
         return new MazeLauncherImpl(
                 directionFactory,
-                mazeChainFactory,
+                costChainFactory,
                 generationFactory,
                 printer,
                 reader,

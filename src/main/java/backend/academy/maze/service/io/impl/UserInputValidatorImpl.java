@@ -8,6 +8,17 @@ public class UserInputValidatorImpl implements UserInputValidator {
     private static final int CRITICAL_POSITION = 0;
 
     @Override
+    public boolean isLineValid(String line) {
+        try {
+            Integer.parseInt(line.split(" ")[0]);
+            Integer.parseInt(line.split(" ")[1]);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public boolean isPointValid(int row, int column) {
         return row > CRITICAL_POSITION
                 && column > CRITICAL_POSITION;
