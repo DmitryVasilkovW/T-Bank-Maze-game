@@ -6,7 +6,7 @@ import backend.academy.maze.model.Maze;
 import backend.academy.maze.model.type.PassageType;
 import backend.academy.maze.model.type.SurfaceType;
 import backend.academy.maze.service.generator.Generator;
-import backend.academy.maze.service.generator.service.RandomSufferGenerator;
+import backend.academy.maze.service.generator.random.suffer.RandomSufferGenerator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

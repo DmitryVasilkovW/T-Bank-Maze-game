@@ -7,7 +7,7 @@ import backend.academy.maze.model.type.PassageType;
 import backend.academy.maze.model.type.SurfaceType;
 import backend.academy.maze.service.generator.handler.chain.factory.impl.SurfaceTypeHandlerChainFactoryImpl;
 import backend.academy.maze.service.generator.impl.PrimGenerator;
-import backend.academy.maze.service.generator.service.impl.RandomSufferGeneratorImpl;
+import backend.academy.maze.service.generator.random.suffer.impl.RandomSufferGeneratorImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Spy;
