@@ -3,28 +3,23 @@ package backend.academy.maze.service.generator.impl;
 import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
-import backend.academy.maze.model.chain.Surface;
-import backend.academy.maze.model.chain.request.SurfaceRequest;
 import backend.academy.maze.model.type.PassageType;
 import backend.academy.maze.model.type.SurfaceType;
 import backend.academy.maze.service.generator.Generator;
-import backend.academy.maze.service.generator.handler.chain.SurfaceHandlerChain;
+import backend.academy.maze.service.generator.service.RandomSufferGenerator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 public class DFSGenerator implements Generator {
-    private final Random random = new Random();
-    private final SurfaceHandlerChain surfaceHandlerChain;
+    private final RandomSufferGenerator sufferGenerator;
     private final List<Coordinate> directions;
     private Maze maze;
-    private static final int UPPER_BORDER_FOR_RANDOM_VALUE = 10;
     private static final PassageType TYPE_OF_WALL = PassageType.WALL;
     private static final int DISTANCE_MULTIPLIER = 2;
 
-    public DFSGenerator(SurfaceHandlerChain surfaceHandlerChain, List<Coordinate> directions) {
-        this.surfaceHandlerChain = surfaceHandlerChain;
+    public DFSGenerator(RandomSufferGenerator sufferGenerator, List<Coordinate> directions) {
+        this.sufferGenerator = sufferGenerator;
         this.directions = directions;
     }
 
@@ -50,15 +45,9 @@ public class DFSGenerator implements Generator {
     private void generateMaze(int row, int col) {
         Cell current = maze.getCell(row, col);
         current.type(PassageType.PASSAGE);
-        current.surface(getRandomSurface());
+        current.surface(sufferGenerator.getRandomSurface());
 
         setSurfaces(row, col);
-    }
-
-    private SurfaceType getRandomSurface() {
-        int randomValue = random.nextInt(UPPER_BORDER_FOR_RANDOM_VALUE);
-        Surface surface = surfaceHandlerChain.handle(new SurfaceRequest(randomValue));
-        return surface.surfaceType();
     }
 
     private void setSurfaces(int row, int col) {

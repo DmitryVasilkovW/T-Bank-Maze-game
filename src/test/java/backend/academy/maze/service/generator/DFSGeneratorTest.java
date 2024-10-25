@@ -7,11 +7,13 @@ import backend.academy.maze.model.type.PassageType;
 import backend.academy.maze.model.type.SurfaceType;
 import backend.academy.maze.service.generator.handler.chain.factory.impl.SurfaceTypeHandlerChainFactoryImpl;
 import backend.academy.maze.service.generator.impl.DFSGenerator;
+import backend.academy.maze.service.generator.service.impl.RandomSufferGeneratorImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,7 +30,12 @@ public class DFSGeneratorTest {
                 new Coordinate(-1, 0)
         );
 
-        generator = new DFSGenerator(new SurfaceTypeHandlerChainFactoryImpl().create(), directionsForGen);
+        generator = new DFSGenerator(
+                new RandomSufferGeneratorImpl(
+                        new SurfaceTypeHandlerChainFactoryImpl().create(),
+                        new Random(),
+                        10),
+                directionsForGen);
     }
 
     @Test
@@ -109,18 +116,10 @@ public class DFSGeneratorTest {
                 Cell cell = maze.getCell(row, col);
                 if (cell.type() == PassageType.PASSAGE) {
                     switch (cell.surface()) {
-                        case MUD:
-                            mudCount++;
-                            break;
-                        case SAND:
-                            sandCount++;
-                            break;
-                        case COIN:
-                            coinCount++;
-                            break;
-                        case NORMAL:
-                            normalCount++;
-                            break;
+                        case MUD -> mudCount++;
+                        case SAND -> sandCount++;
+                        case COIN -> coinCount++;
+                        case NORMAL -> normalCount++;
                     }
                 }
             }

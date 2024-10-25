@@ -1,6 +1,7 @@
 package backend.academy.maze.service.launcher.factory.impl;
 
 import backend.academy.maze.service.chain.factory.impl.MazeChainFactoryImpl;
+import backend.academy.maze.service.generator.factory.impl.GeneratorFactoryImpl;
 import backend.academy.maze.service.generator.handler.chain.factory.impl.SurfaceTypeHandlerChainFactoryImpl;
 import backend.academy.maze.service.io.factory.impl.RenderFactoryImpl;
 import backend.academy.maze.service.io.impl.PrintStreamPrinterImpl;
@@ -35,10 +36,12 @@ public class MazeLauncherFactoryImpl implements MazeLauncherFactory {
         var reader = new ScannerReaderImpl(System.in);
         var render = new RenderFactoryImpl(passageForObjectChainFactory, surfaceForObjectChainFactory).create();
         var inputValidator = new UserInputValidatorImpl();
+        var generationFactory = new GeneratorFactoryImpl(surfaceTypeChainFactory);
 
         return new MazeLauncherImpl(
                 directionFactory,
                 mazeChainFactory,
+                generationFactory,
                 printer,
                 reader,
                 render,

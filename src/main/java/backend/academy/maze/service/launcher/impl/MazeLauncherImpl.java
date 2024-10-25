@@ -4,8 +4,7 @@ import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
 import backend.academy.maze.service.chain.factory.MazeChainFactory;
 import backend.academy.maze.service.generator.Generator;
-import backend.academy.maze.service.generator.impl.DFSGenerator;
-import backend.academy.maze.service.generator.impl.PrimGenerator;
+import backend.academy.maze.service.generator.factory.GeneratorFactory;
 import backend.academy.maze.service.io.Printer;
 import backend.academy.maze.service.io.Reader;
 import backend.academy.maze.service.io.Render;
@@ -23,6 +22,7 @@ public class MazeLauncherImpl implements MazeLauncher {
 
     private final DirectionFactory directionFactory;
     private final MazeChainFactory mazeChainFactory;
+    private final GeneratorFactory generatorFactory;
     private final Printer printer;
     private final Reader reader;
     private final Render render;
@@ -41,19 +41,20 @@ public class MazeLauncherImpl implements MazeLauncher {
     private static final String WARNING_FOR_GETTING_SIZE = "Incorrect input. It must be minimum 3 x 3.";
     private static final String MESSAGE_FOR_GETTING_SIZE =
             "Enter height and weight for maze. Format: height weight (15 15)";
-    private static final String MESSAGE_FOR_SUCCESSFULL_SOLUTION = "Path found:";
-    private static final String MESSAGE_FOR_UNSUCCESSFULL_SOLUTION = "No path found.";
+    private static final String MESSAGE_FOR_SUCCESSFULLY_SOLUTION = "Path found:";
+    private static final String MESSAGE_FOR_UNSUCCESSFULLY_SOLUTION = "No path found.";
 
 
     public MazeLauncherImpl(
             DirectionFactory directionFactory,
-            MazeChainFactory mazeChainFactory,
+            MazeChainFactory mazeChainFactory, GeneratorFactory generatorFactory,
             Printer printer,
             Reader reader,
             Render render,
             UserInputValidator userInputValidator) {
         this.directionFactory = directionFactory;
         this.mazeChainFactory = mazeChainFactory;
+        this.generatorFactory = generatorFactory;
         this.printer = printer;
         this.reader = reader;
         this.render = render;
@@ -84,11 +85,11 @@ public class MazeLauncherImpl implements MazeLauncher {
     private void showSolution(Maze maze, Coordinate start, Coordinate end) {
         List<Coordinate> path = solver.solve(start, end);
         if (path.isEmpty()) {
-            printer.println(MESSAGE_FOR_UNSUCCESSFULL_SOLUTION);
+            printer.println(MESSAGE_FOR_UNSUCCESSFULLY_SOLUTION);
             return;
         }
 
-        printer.println(MESSAGE_FOR_SUCCESSFULL_SOLUTION);
+        printer.println(MESSAGE_FOR_SUCCESSFULLY_SOLUTION);
         printer.println(render.render(maze, path));
     }
 
@@ -110,8 +111,8 @@ public class MazeLauncherImpl implements MazeLauncher {
     private Generator getGenerator(List<Coordinate> directionsForGenerator) {
         return getCorrectParameter(
                 MESSAGE_FOR_GETTING_GENERATOR,
-                () -> new DFSGenerator(mazeChainFactory.createSurfaceHandlerChain(), directionsForGenerator),
-                PrimGenerator::new
+                () -> generatorFactory.createDFSGenerator(directionsForGenerator),
+                () -> generatorFactory.createPrimeGenerator(directionsForGenerator)
         );
     }
 
