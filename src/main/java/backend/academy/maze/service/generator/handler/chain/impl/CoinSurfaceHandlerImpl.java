@@ -9,7 +9,7 @@ public class CoinSurfaceHandlerImpl extends SurfaceHandlerChainImpl {
 
     @Override
     public Surface handle(SurfaceRequest request) {
-        if (request.randonNumber() == BORDER_FOR_COIN) {
+        if (request.randomNumber() == BORDER_FOR_COIN) {
             return new Surface(SurfaceType.COIN);
         }
         return next.handle(request);

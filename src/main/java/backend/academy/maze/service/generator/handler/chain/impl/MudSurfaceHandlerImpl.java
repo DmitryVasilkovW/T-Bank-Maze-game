@@ -9,7 +9,7 @@ public class MudSurfaceHandlerImpl extends SurfaceHandlerChainImpl {
 
     @Override
     public Surface handle(SurfaceRequest request) {
-        if (request.randonNumber() < UPPER_BORDER_FOR_MUD) {
+        if (request.randomNumber() < UPPER_BORDER_FOR_MUD) {
             return new Surface(SurfaceType.MUD);
         }
         return next.handle(request);
