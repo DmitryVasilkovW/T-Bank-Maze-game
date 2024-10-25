@@ -13,7 +13,8 @@ public class RenderFactoryImpl implements RenderFactory {
     private final SurfaceHandlerChainFactory surfaceHandlerChainFactory;
 
     public RenderFactoryImpl(
-            PassageHandlerChainFactory phaseHandlerChainFactory, SurfaceHandlerChainFactory surfaceHandlerChainFactory) {
+            PassageHandlerChainFactory phaseHandlerChainFactory,
+            SurfaceHandlerChainFactory surfaceHandlerChainFactory) {
         this.phaseHandlerChainFactory = phaseHandlerChainFactory;
         this.surfaceHandlerChainFactory = surfaceHandlerChainFactory;
     }

@@ -120,7 +120,7 @@ public class MazeLauncherImpl implements MazeLauncher {
                 MESSAGE_FOR_GETTING_SOLVER,
                 () -> new AStarSolver(directionsForSolver, mazeChainFactory.createCostHandlerChain(),
                         maze),
-                () -> new BFSSolver(maze)
+                () -> new BFSSolver(directionsForSolver, maze)
         );
 
     }

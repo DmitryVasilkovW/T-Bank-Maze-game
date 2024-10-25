@@ -13,8 +13,7 @@ public abstract class SurfaceObjectForCellHandlerChainImpl implements
             SurfaceObjectForCellHandlerChain link) {
         if (next == null) {
             next = link;
-        }
-        else {
+        } else {
             next.addNext(link);
         }
 

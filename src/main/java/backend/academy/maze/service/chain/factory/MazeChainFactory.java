@@ -6,8 +6,12 @@ import backend.academy.maze.service.io.impl.handler.chain.surface.SurfaceObjectF
 import backend.academy.maze.service.solver.handler.chain.CostHandlerChain;
 
 public interface MazeChainFactory {
+
     SurfaceHandlerChain createSurfaceHandlerChain();
+
     PassageObjectForCellHandlerChain createPassageObjectForCellHandlerChain();
+
     SurfaceObjectForCellHandlerChain createSurfaceObjectForCellHandlerChain();
+
     CostHandlerChain createCostHandlerChain();
 }

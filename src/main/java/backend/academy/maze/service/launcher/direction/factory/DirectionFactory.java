@@ -4,6 +4,8 @@ import backend.academy.maze.model.Coordinate;
 import java.util.List;
 
 public interface DirectionFactory {
-    List<Coordinate> createDirectionAsList(boolean IsDiagonalMovementPossible);
-    int[][] createDirectionAsMatrix(boolean IsDiagonalMovementPossible);
+
+    List<Coordinate> createDirectionAsList(boolean isDiagonalMovementPossible);
+
+    int[][] createDirectionAsMatrix(boolean isDiagonalMovementPossible);
 }
