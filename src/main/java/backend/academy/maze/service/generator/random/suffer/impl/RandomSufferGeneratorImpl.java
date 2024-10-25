@@ -1,10 +1,10 @@
-package backend.academy.maze.service.generator.service.impl;
+package backend.academy.maze.service.generator.random.suffer.impl;
 
 import backend.academy.maze.model.chain.Surface;
 import backend.academy.maze.model.chain.request.SurfaceRequest;
 import backend.academy.maze.model.type.SurfaceType;
 import backend.academy.maze.service.generator.handler.chain.SurfaceHandlerChain;
-import backend.academy.maze.service.generator.service.RandomSufferGenerator;
+import backend.academy.maze.service.generator.random.suffer.RandomSufferGenerator;
 import java.util.Random;
 
 public class RandomSufferGeneratorImpl implements RandomSufferGenerator {

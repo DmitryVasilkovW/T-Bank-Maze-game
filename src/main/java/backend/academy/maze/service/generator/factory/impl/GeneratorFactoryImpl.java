@@ -6,7 +6,7 @@ import backend.academy.maze.service.generator.factory.GeneratorFactory;
 import backend.academy.maze.service.generator.handler.chain.factory.SurfaceTypeHandlerChainFactory;
 import backend.academy.maze.service.generator.impl.DFSGenerator;
 import backend.academy.maze.service.generator.impl.PrimGenerator;
-import backend.academy.maze.service.generator.service.impl.RandomSufferGeneratorImpl;
+import backend.academy.maze.service.generator.random.suffer.impl.RandomSufferGeneratorImpl;
 import java.util.List;
 import java.util.Random;
 

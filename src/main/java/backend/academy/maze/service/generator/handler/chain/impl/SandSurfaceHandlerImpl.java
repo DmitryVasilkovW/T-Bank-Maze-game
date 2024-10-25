@@ -9,7 +9,7 @@ public class SandSurfaceHandlerImpl extends SurfaceHandlerChainImpl {
 
     @Override
     public Surface handle(SurfaceRequest request) {
-        if (request.randonNumber() < UPPER_BORDER_FOR_SAND) {
+        if (request.randomNumber() < UPPER_BORDER_FOR_SAND) {
             return new Surface(SurfaceType.SAND);
         }
         return next.handle(request);
