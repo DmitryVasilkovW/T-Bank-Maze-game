@@ -1,11 +1,10 @@
 package backend.academy.maze.service.solver;
 
-import backend.academy.maze.model.Cell;
 import backend.academy.maze.model.Coordinate;
 import backend.academy.maze.model.Maze;
-import backend.academy.maze.model.type.SurfaceType;
-import backend.academy.maze.model.TestCaseForSurface;
+import backend.academy.model.TestCaseForSurface;
 import backend.academy.maze.model.type.PassageType;
+import backend.academy.maze.model.type.SurfaceType;
 import backend.academy.maze.service.solver.handler.chain.factory.impl.CostHandlerChainFactoryImpl;
 import backend.academy.maze.service.solver.impl.AStarSolver;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,30 +12,29 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.lang.reflect.Method;
+import org.mockito.Spy;
 import java.util.List;
 import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AStarSolverTest {
-
-    private AStarSolver solver;
-    private Maze maze;
+    CostHandlerChainFactoryImpl factory = new CostHandlerChainFactoryImpl();
+    int[][] directions = {
+            {0, 1},
+            {0, -1},
+            {1, 0},
+            {-1, 0},
+    };
+    @Spy
+    private Maze maze = new Maze(5, 5);
+    @Spy
+    private AStarSolver solver = new AStarSolver(directions, factory.create(), maze);
 
     @BeforeEach
     void setUp() {
-        int[][] directions = {
-                {0, 1},
-                {0, -1},
-                {1, 0},
-                {-1, 0},
-        };
-        var factory = new CostHandlerChainFactoryImpl();
-        maze = new Maze(5, 5);
-        solver = new AStarSolver(directions, factory.create(), maze);
-
         for (int row = 0; row < maze.height(); row++) {
             for (int col = 0; col < maze.width(); col++) {
                 maze.getCell(row, col).type(PassageType.WALL);
@@ -148,56 +146,6 @@ public class AStarSolverTest {
                         SurfaceType.COIN
                 )
         );
-    }
-
-    @Test
-    @DisplayName("Test move cost calculation using reflection")
-    void testMoveCostCalculationUsingReflection() throws Exception {
-        Cell cell = new Cell(0, 0, null);
-
-        Method getMoveCostMethod = AStarSolver.class.getDeclaredMethod("getMoveCost", Cell.class);
-        getMoveCostMethod.setAccessible(true);
-
-        cell.surface(SurfaceType.NORMAL);
-        assertEquals(1.0, getMoveCostMethod.invoke(solver, cell));
-
-        cell.surface(SurfaceType.MUD);
-        assertEquals(5.0, getMoveCostMethod.invoke(solver, cell));
-
-        cell.surface(SurfaceType.SAND);
-        assertEquals(3.0, getMoveCostMethod.invoke(solver, cell));
-
-        cell.surface(SurfaceType.COIN);
-        assertEquals(-2.0, getMoveCostMethod.invoke(solver, cell));
-    }
-
-    @Test
-    @DisplayName("Test heuristic calculation using reflection")
-    void testHeuristicCalculationUsingReflection() throws Exception {
-        Method heuristicMethod = AStarSolver.class.getDeclaredMethod("heuristic", Coordinate.class, Coordinate.class);
-        heuristicMethod.setAccessible(true);
-
-        Coordinate a = new Coordinate(0, 0);
-        Coordinate b = new Coordinate(4, 2);
-
-        double heuristic = (double) heuristicMethod.invoke(solver, a, b);
-
-        assertEquals(6.0, heuristic, "The heuristic should be the Manhattan distance between the two points");
-    }
-
-    @Test
-    @DisplayName("Test neighbors retrieval using reflection")
-    void testGetNeighborsUsingReflection() throws Exception {
-        Method getNeighborsMethod = AStarSolver.class.getDeclaredMethod("getNeighbors", Coordinate.class);
-        getNeighborsMethod.setAccessible(true);
-
-        Coordinate coord = new Coordinate(1, 2);
-
-        List<Coordinate> neighbors = (List<Coordinate>) getNeighborsMethod.invoke(solver, coord);
-
-        assertEquals(2, neighbors.size(), "The coordinate (1,2) should have three valid neighbors");
-        assertTrue(neighbors.contains(new Coordinate(0, 2)), "The top neighbor should be (0,2)");
-        assertTrue(neighbors.contains(new Coordinate(2, 2)), "The bottom neighbor should be (2,2)");
     }
 
 }

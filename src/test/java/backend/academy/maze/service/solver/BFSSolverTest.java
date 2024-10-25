@@ -7,6 +7,7 @@ import backend.academy.maze.service.solver.impl.BFSSolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Spy;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -14,20 +15,20 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BFSSolverTest {
-    private Solver solver;
-    private Maze maze;
+    int[][] directions = {
+            {0, 1},
+            {0, -1},
+            {1, 0},
+            {-1, 0},
+    };
+
+    @Spy
+    private Maze maze = new Maze(5, 5);
+    @Spy
+    private Solver solver = new BFSSolver(directions, maze);;
 
     @BeforeEach
     void setUp() {
-        int[][] directions = {
-                {0, 1},
-                {0, -1},
-                {1, 0},
-                {-1, 0},
-        };
-        maze = new Maze(5, 5);
-        solver = new BFSSolver(directions, maze);
-
         for (int row = 0; row < maze.height(); row++) {
             for (int col = 0; col < maze.width(); col++) {
                 maze.getCell(row, col).type(PassageType.WALL);

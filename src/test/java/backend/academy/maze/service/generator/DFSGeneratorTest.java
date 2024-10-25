@@ -8,35 +8,32 @@ import backend.academy.maze.model.type.SurfaceType;
 import backend.academy.maze.service.generator.handler.chain.factory.impl.SurfaceTypeHandlerChainFactoryImpl;
 import backend.academy.maze.service.generator.impl.DFSGenerator;
 import backend.academy.maze.service.generator.service.impl.RandomSufferGeneratorImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Spy;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import static backend.academy.dfs.Dfs.dfsValidate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DFSGeneratorTest {
-    private DFSGenerator generator;
+    List<Coordinate> directionsForGen = List.of(
+            new Coordinate(0, 1),
+            new Coordinate(1, 0),
+            new Coordinate(0, -1),
+            new Coordinate(-1, 0)
+    );
 
-    @BeforeEach
-    void setUp() {
-        List<Coordinate> directionsForGen = List.of(
-                new Coordinate(0, 1),
-                new Coordinate(1, 0),
-                new Coordinate(0, -1),
-                new Coordinate(-1, 0)
-        );
-
-        generator = new DFSGenerator(
+    @Spy
+    private DFSGenerator generator = new DFSGenerator(
                 new RandomSufferGeneratorImpl(
-                        new SurfaceTypeHandlerChainFactoryImpl().create(),
+            new SurfaceTypeHandlerChainFactoryImpl().create(),
                         new Random(),
                         10),
-                directionsForGen);
-    }
+    directionsForGen);
 
     @Test
     @DisplayName("Checking width and height")
@@ -156,23 +153,4 @@ public class DFSGeneratorTest {
         }
     }
 
-
-    private void dfsValidate(Maze maze, Coordinate coord, Set<Coordinate> visited) {
-        if (coord.row() < 0 || coord.row() >= maze.height() ||
-                coord.col() < 0 || coord.col() >= maze.width()) {
-            return;
-        }
-
-        Cell cell = maze.getCell(coord.row(), coord.col());
-        if (cell.type() != PassageType.PASSAGE || visited.contains(coord)) {
-            return;
-        }
-
-        visited.add(coord);
-
-        dfsValidate(maze, new Coordinate(coord.row() + 1, coord.col()), visited);
-        dfsValidate(maze, new Coordinate(coord.row() - 1, coord.col()), visited);
-        dfsValidate(maze, new Coordinate(coord.row(), coord.col() + 1), visited);
-        dfsValidate(maze, new Coordinate(coord.row(), coord.col() - 1), visited);
-    }
 }
