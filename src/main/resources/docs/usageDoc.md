@@ -84,6 +84,6 @@ When using the `MazeLauncherImpl` class, users will interact through the console
 
 7. **Prompt:** "Does the hero need to pay attention to surfaces?"
     - **User Input:** `yes`
-    - **Response:** The hero will collect useful items and bypass the bad areas With A*.
+    - **Response:** The hero will collect useful items and bypass the bad areas with A*.
     - **User Input** `no`
-    - **Response:** The hero will not collect useful items and bypass the bad areas With BFS.
+    - **Response:** The hero will not collect useful items and bypass the bad areas with BFS.
